@@ -12,8 +12,8 @@ A instituição Lar Ternura, que abriga jovens e adultos com deficiência na reg
 Para solucionar este problema, o grupo do PI propos desenvolver uma plataforma web onde a ONG poderá atualizar um "termômetro" de necessidades em tempo real. O doador visualizará os itens urgentes, comprometendo-se com a doação e realizando o agendamento da entrega. O sistema terá um frontend responsivo e acessível, com backend estruturado e banco de dados relacional para gerenciar os agendamentos.
 
 ## Tecnologias
-- Backend: ...
-- Frontend: ...
+- Backend: Node.js
+- Frontend: JavaScript
 - Banco de dados: PostgreSQL (Neon)
 - Hospedagem: Render
 - Testes: ...
