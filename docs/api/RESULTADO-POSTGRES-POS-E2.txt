@@ -1,0 +1,67 @@
+PostgreSQL local: 17.11
+TAP version 13
+# Duas sessões PostgreSQL distintas; READ COMMITTED e role limitada de execução.
+# Subtest: renovação ganha: entrega usa a nova meta e preenche o termômetro
+ok 1 - renovação ganha: entrega usa a nova meta e preenche o termômetro
+  ---
+  duration_ms: 833.8837
+  type: 'test'
+  ...
+# Subtest: renovação por SQL direto também é reconhecida após a espera
+ok 2 - renovação por SQL direto também é reconhecida após a espera
+  ---
+  duration_ms: 488.5406
+  type: 'test'
+  ...
+# Subtest: vários produtos: uma meta renovada não perde vínculo nem duplica outro item
+ok 3 - vários produtos: uma meta renovada não perde vínculo nem duplica outro item
+  ---
+  duration_ms: 527.4215
+  type: 'test'
+  ...
+# Subtest: encerramento sem substituta mantém recebimento sem meta por ausência real
+ok 4 - encerramento sem substituta mantém recebimento sem meta por ausência real
+  ---
+  duration_ms: 477.6075
+  type: 'test'
+  ...
+# Subtest: confirmação ganha: renovação aguarda e preserva o crédito no histórico anterior
+ok 5 - confirmação ganha: renovação aguarda e preserva o crédito no histórico anterior
+  ---
+  duration_ms: 502.9811
+  type: 'test'
+  ...
+# Subtest: renovações contínuas fazem rollback e a mesma chave pode recuperar a operação depois
+ok 6 - renovações contínuas fazem rollback e a mesma chave pode recuperar a operação depois
+  ---
+  duration_ms: 534.9006
+  type: 'test'
+  ...
+# Subtest: duas conexões com a mesma chave confirmam uma única doação
+ok 7 - duas conexões com a mesma chave confirmam uma única doação
+  ---
+  duration_ms: 488.878
+  type: 'test'
+  ...
+# Subtest: cinco corridas controladas consecutivas não perdem crédito
+ok 8 - cinco corridas controladas consecutivas não perdem crédito
+  ---
+  duration_ms: 733.0495
+  type: 'test'
+  ...
+# Subtest: travas seguem ordem numérica com IDs 2 e 10, compatível com o banco
+ok 9 - travas seguem ordem numérica com IDs 2 e 10, compatível com o banco
+  ---
+  duration_ms: 483.5288
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5470.3317
+Cluster de teste encerrado. Sem serviço instalado.

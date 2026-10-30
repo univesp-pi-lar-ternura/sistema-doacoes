@@ -8,7 +8,7 @@ Entrega da tarefa 8, preparada em 12/10/2026. API 2.0.0. Todos os ensaios foram 
 
 1. Vinicius deve confirmar o projeto, branch, banco, conexão e estado atual da instalação. O PDF relata a instalação em `neondb`; não verificamos esse ambiente diretamente.
 2. Preservar um backup/branch antes de qualquer alteração de estrutura no ambiente compartilhado. Conferir as nove tabelas e três views conforme `02_CONFERIR_INSTALACAO.sql`.
-3. Usar Node.js 20.19+ ou 22.12+, instalar as dependências na pasta `backend` com `pnpm install --frozen-lockfile`.
+3. Usar Node.js 22 (22.13.0 ou posterior da série 22) e pnpm 11.25.0, instalar as dependências na pasta `backend` com `pnpm install --frozen-lockfile`.
 4. Configurar `DATABASE_URL` em ambiente privado, com a conexão TLS fornecida pelo Neon. Não colocar a senha no código nem no Drive. Não desabilitar a verificação de certificado.
 5. Executar `pnpm db:migrate`, com uma conexão de manutenção autorizada. Esse comando aplica **somente** `backend/migrations/002_compatibilidade_vinicius.sql`, dentro de transação. Não executa reset, seed, recriação, 00, 01 ou 05. Recusa modelo antigo/misto e preserva dados, triggers e views.
 6. O complemento cria o schema `api_apoio` com cinco tabelas: sessões, vagas, idempotência de agendamentos, vínculo promessa/meta e idempotência de recebimentos. Acrescenta somente o hash de gestão em `public.agendamentos`. As nove tabelas de negócio e três views do Vinicius são preservadas.

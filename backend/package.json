@@ -4,11 +4,11 @@
   "private": true,
   "main": "src/server.js",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.13.0 <23"
   },
   "scripts": {
     "start": "node src/server.js",
-    "test": "node --test test/brasilapi-feriados.test.js test/calendario-http.test.js test/compatibilidade.test.js test/estrutura.test.js test/e1.test.js test/documentation.test.js",
+    "test": "node --test test/brasilapi-feriados.test.js test/calendario-http.test.js test/compatibilidade.test.js test/estrutura.test.js test/e1.test.js test/documentation.test.js test/ajustes-e2.test.js",
     "db:migrate": "node scripts/migrate.js",
     "admin:create": "node scripts/create-admin.js",
     "docs:postman": "node scripts/build-postman.js",

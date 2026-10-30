@@ -1,0 +1,72 @@
+Node.js: v22.23.4
+pnpm: 11.25.0
+Node oficial isolado para QA; nenhum runtime do sistema substituído.
+https://nodejs.org/dist/latest-v22.x/node-v22.23.4-win-x64.zip
+SHA256 cbc74b5e0982c9dbb41525fd8fb5dcd32fbee237863f7829072f4639a1ce5f20
+
+Instalação completa: pnpm install --frozen-lockfile
+✓ Lockfile passes supply-chain policies (verified 4d ago)
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +86
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 86, reused 0, downloaded 0, added 0
+
+   ╭────────────────────────────────────────────────────────────────────────╮
+   │                                                                        │
+   │                  Update available! 11.25.0 → 12.15.0.                  │
+   │                  Changelog: https://pnpm.io/v/12.15.0                  │
+   │   To update, run: Invoke-WebRequest https://get.pnpm.io/install.ps1    │
+   │                 -UseBasicParsing | Invoke-Expression                   │
+   │                                                                        │
+   ╰────────────────────────────────────────────────────────────────────────╯
+
+Progress: resolved 86, reused 0, downloaded 14, added 0
+Progress: resolved 86, reused 0, downloaded 20, added 0
+Progress: resolved 86, reused 0, downloaded 37, added 0
+Packages are hard linked from the content-addressable store to the virtual store.
+  Content-addressable store is at: C:\Users\eu\.codex\.chatgpt-projects\g-p-6ac90b8f8bfc8191a0574608a752c156\.pnpm-store\v11
+  Virtual store is at:             node_modules/.pnpm
+Progress: resolved 86, reused 0, downloaded 46, added 3
+Progress: resolved 86, reused 0, downloaded 64, added 4
+Progress: resolved 86, reused 0, downloaded 70, added 4
+Progress: resolved 86, reused 0, downloaded 74, added 4
+Progress: resolved 86, reused 0, downloaded 78, added 4
+Progress: resolved 86, reused 0, downloaded 82, added 4
+Progress: resolved 86, reused 0, downloaded 85, added 7
+Progress: resolved 86, reused 0, downloaded 85, added 27
+Progress: resolved 86, reused 0, downloaded 86, added 48
+Progress: resolved 86, reused 0, downloaded 86, added 86, done
+
+dependencies:
++ dotenv 16.6.1
++ express 4.22.3
++ pg 8.23.1
++ swagger-ui-dist 5.34.0
+
+devDependencies:
++ @electric-sql/pglite 0.3.16
+
+Done in 16.2s using pnpm v11.25.0
+
+Instalação separada de produção, em pasta limpa e com cache já preenchido: pnpm install --prod --offline --frozen-lockfile
+✓ Lockfile passes supply-chain policies (verified 4d ago)
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +85
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Packages are hard linked from the content-addressable store to the virtual store.
+  Content-addressable store is at: C:\Users\eu\.codex\.chatgpt-projects\g-p-6ac90b8f8bfc8191a0574608a752c156\.pnpm-store\v11
+  Virtual store is at:             node_modules/.pnpm
+Progress: resolved 85, reused 85, downloaded 0, added 23
+Progress: resolved 85, reused 85, downloaded 0, added 85, done
+
+dependencies:
++ dotenv 16.6.1
++ express 4.22.3
++ pg 8.23.1
++ swagger-ui-dist 5.34.0
+
+devDependencies: skipped
+
+Done in 3.2s using pnpm v11.25.0

@@ -89,6 +89,8 @@ function receipt(v){
 function uuid(v){if(typeof v!=='string'||!(/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i).test(v))fail(422,'CHAVE_OBRIGATORIA','Envie Idempotency-Key como UUID.');return v.toLowerCase();}
 function bookingFilters(q){
  const data=q.data===undefined?null:date(q.data);
+ const de=q.de===undefined?null:date(q.de),ate=q.ate===undefined?null:date(q.ate);
+ if(de!==null&&ate!==null&&de>ate)fail(422,'VALIDACAO','O início do período não pode ser maior que o fim.');
  let statuses=null;
  if(q.status!==undefined){
   if(typeof q.status!=='string')fail(422,'VALIDACAO','Status inválido.');
@@ -96,7 +98,7 @@ function bookingFilters(q){
   if(statuses.length>4||statuses.some(s=>!['Pendente','Confirmado','Concluído','Cancelado'].includes(s)))fail(422,'VALIDACAO','Status inválido.');
   statuses=[...new Set(statuses)];
  }
- return{...pagination(q),data,statuses,q:q.q===undefined?null:string(q.q,'Busca',100)};
+ return{...pagination(q),data,de,ate,statuses,q:q.q===undefined?null:string(q.q,'Busca',100)};
 }
 function receiveCompletion(v){
  object(v,['itens','motivo_pendencias']);

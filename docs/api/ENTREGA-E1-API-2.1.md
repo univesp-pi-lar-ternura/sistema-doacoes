@@ -4,7 +4,7 @@ Preparada em 23/10/2026 a partir da develop `8cebf7dcd40321fb882e701fec9af6f670d
 
 ## Comportamentos entregues
 
-- `GET /admin/agendamentos`: ordem de data da entrega decrescente, desempate pelo código decrescente; filtros de data, `q`, `status`, `limit` e `offset`. Status aceita um valor ou CSV, por exemplo `Pendente,Confirmado`.
+- `GET /admin/agendamentos`: ordem de data da entrega decrescente, desempate pelo código decrescente; filtros de `data`, `de`, `ate`, `q`, `status`, `limit` e `offset`. O período é inclusivo pela data da entrega em São Paulo; `de > ate` ou data inválida retorna 422. Status aceita um valor ou CSV, por exemplo `Pendente,Confirmado`.
 - Busca por código com ou sem `#`; entrada numérica também consulta telefone quando tiver ao menos quatro dígitos, ignorando formatação. Entrada textual consulta nome/email sem diferenciar caixa. `%`, `_` e barra invertida são literais. Não foi adicionada busca sem acentos.
 - `quantidade_recebida` em cada item do agendamento: soma de todos os recebimentos confirmados, excluindo estornos, independente da paginação de `/doacoes`. Retornado como inteiro seguro; não é estoque.
 - `POST /admin/agendamentos/{id}/receber-e-concluir`: autenticação administrativa e UUID em `Idempotency-Key`. Registra o que chegou e conclui em uma única transação. Preserva as rotas antigas.
@@ -60,14 +60,14 @@ O formato da nova conclusão corresponde ao adaptador `receberEConcluir` já exi
 
 ## Como validar e usar
 
-Na pasta backend, com Node.js 20+ e pnpm compatível com o lockfile:
+Na pasta backend, com Node.js 22 (22.13.0 ou posterior da série 22) e pnpm 11.25.0, fixado em packageManager:
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm test
 ```
 
-Os testes usam PGlite descartável, sem `DATABASE_URL` real. Há 65 casos anteriores e 30 novos: 27 funcionais E1 e 3 de documentação/contrato. As 25 verificações SQL originais estão dentro de um caso anterior; não somá-las novamente. O comando de teste lista somente os arquivos `.test.js`, evitando contar módulos de apoio como testes extras. O checksum da fixture normaliza LF/CRLF; o SQL do banco não foi alterado.
+Os testes usam PGlite descartável, sem `DATABASE_URL` real. A E1 original possui 95 casos: 65 anteriores, 27 funcionais E1 e 3 de documentação/contrato. O complemento de 28/10 acrescenta 15 casos, totalizando 110 em `pnpm test`. Os nove casos PostgreSQL do PR #36 são executados separadamente por `pnpm test:postgres`. As 25 verificações SQL originais estão dentro de um caso anterior; não somá-las novamente. O comando de teste lista somente os arquivos `.test.js`, evitando contar módulos de apoio como testes extras. O checksum da fixture normaliza LF/CRLF; o SQL do banco não foi alterado.
 
 Para abrir Swagger, iniciar a API com configuração de um banco de teste autorizado conforme README. `/docs` não executa migrações. Na coleção Postman, preencher `base_url`, credenciais administrativas privadas, data/horário futuros e IDs retornados pela API. O login preenche `ong_token`; o agendamento preenche `id` e `token_agendamento`. As variáveis `chave_*` são geradas uma vez por operação para permitir retry: limpar a variável ao iniciar outra operação. Executar os pedidos individualmente num ambiente de teste, pois a coleção inclui rotas de escrita.
 

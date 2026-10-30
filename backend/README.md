@@ -29,3 +29,11 @@ Ler `docs/api/ENTREGA-E1-API-2.1.md` a partir da raiz do projeto. Swagger em `/d
 ## Correção de concorrência — 26/10/2026
 
 A seleção da meta em receber-e-concluir agora relê após uma renovação concorrente. Novas tentativas que não estabilizam após cinco leituras/travas respondem 409 META_EM_ALTERACAO, com rollback integral e possibilidade de repetir a mesma chave. Guia e evidências: docs/api/CORRECAO-CONCORRENCIA-METAS-26-10-2026.md a partir da raiz do repositório. A suíte PostgreSQL local é executada com PG_BIN configurado e pnpm test:postgres; não usa DATABASE_URL ou Neon.
+
+## Complemento após a E2 — 28/10/2026
+
+Ambiente alinhado a Node.js 22 (22.13.0 ou posterior da série 22) e pnpm 11.25.0. O campo packageManager já estava fixado e foi preservado. O arquivo backend/pnpm-workspace.yaml registra allowBuilds com @scarf/scarf: false, sem desativar globalmente a verificação de scripts de dependências.
+
+GET /admin/agendamentos aceita de e ate opcionais e inclusivos pela data da entrega em America/Sao_Paulo. Mantém data, q, status CSV, limit e offset; filtros simultâneos usam interseção. Formato inválido, data inexistente ou de maior que ate retorna 422. GET /doacoes mantém ocorrido_em decrescente e agora desempata pelo ID numérico decrescente, antes da paginação.
+
+Guia e evidências: docs/api/AJUSTES-POS-E2-28-10-2026.md. Este complemento pressupõe a integração do PR #36 e preserva sua correção de concorrência. Nenhuma alteração em frontend, SQL, migrations, dados, capacidade, feriados ou ambiente publicado.

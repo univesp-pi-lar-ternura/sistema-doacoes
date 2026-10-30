@@ -66,11 +66,13 @@ class Store{
   const rows=(await this.db.query(`SELECT a.id_agendamento FROM public.agendamentos a
    JOIN public.doadores d USING(id_doador)
    WHERE ($1::date IS NULL OR (a.data_hora_agendada AT TIME ZONE 'America/Sao_Paulo')::date=$1)
+    AND ($9::date IS NULL OR (a.data_hora_agendada AT TIME ZONE 'America/Sao_Paulo')::date >= $9)
+    AND ($10::date IS NULL OR (a.data_hora_agendada AT TIME ZONE 'America/Sao_Paulo')::date <= $10)
     AND ($2::text[] IS NULL OR a.status_agendamento=ANY($2))
     AND ($3::text IS NULL OR a.id_agendamento=$4::int OR d.nome ILIKE $8 OR lower(btrim(d.email)) LIKE lower($8)
      OR ($5::text IS NOT NULL AND regexp_replace(d.telefone,'[^0-9]','','g') LIKE $5))
    ORDER BY a.data_hora_agendada DESC,a.id_agendamento DESC LIMIT $6 OFFSET $7`,
-   [f.data||null,statuses,pattern,code,phone,f.limit,f.offset,textPattern])).rows;
+   [f.data||null,statuses,pattern,code,phone,f.limit,f.offset,textPattern,f.de??null,f.ate??null])).rows;
   return Promise.all(rows.map(r=>this.booking(r.id_agendamento,null,this.db,true)));
  }
  async claimReceipt(tx,key,hash,u){
@@ -138,7 +140,7 @@ class Store{
   });
  }
  async donation(id,tx=this.db){const r=(await tx.query('SELECT id_recebimento::text,id_recebimento::text AS id_doacao,chave_operacao,id_doador,id_agendamento,ocorrido_em,status,registrado_por,confirmado_por,estornado_por,motivo_estorno FROM arrecadacao.recebimentos WHERE id_recebimento=$1',[id])).rows[0];if(!r)fail(404,'NAO_ENCONTRADO','Recebimento não encontrado.');r.itens=(await tx.query('SELECT id_item,id_necessidade::text,quantidade_recebida,nome_item_registrado,unidade_registrada FROM arrecadacao.itens_recebimento WHERE id_recebimento=$1 ORDER BY id_item',[id])).rows;return r;}
- async donations(f){return Promise.all((await this.db.query('SELECT id_recebimento::text FROM arrecadacao.recebimentos ORDER BY ocorrido_em DESC,id_recebimento DESC LIMIT $1 OFFSET $2',[f.limit,f.offset])).rows.map(r=>this.donation(r.id_recebimento)));}
+ async donations(f){return Promise.all((await this.db.query('SELECT r.id_recebimento::text FROM arrecadacao.recebimentos r ORDER BY r.ocorrido_em DESC,r.id_recebimento DESC LIMIT $1 OFFSET $2',[f.limit,f.offset])).rows.map(r=>this.donation(r.id_recebimento)));}
  async reverse(id,u,reason){return this.db.transaction(async tx=>{const r=(await tx.query('SELECT status,motivo_estorno FROM arrecadacao.recebimentos WHERE id_recebimento=$1 FOR UPDATE',[id])).rows[0];if(!r)fail(404,'NAO_ENCONTRADO','Recebimento não encontrado.');if(r.status==='Estornado'){if(r.motivo_estorno!==reason)fail(409,'ESTORNO_DEFINITIVO','Estorno registrado com outro motivo.');return this.donation(id,tx);}if(r.status!=='Confirmado')fail(409,'STATUS_INVALIDO','Somente entregas confirmadas podem ser estornadas.');await tx.query("UPDATE arrecadacao.recebimentos SET status='Estornado',estornado_por=$1,motivo_estorno=$2 WHERE id_recebimento=$3",[u,reason,id]);return this.donation(id,tx);});}
  async conclude(id,u,reason){return this.db.transaction(tx=>this.concludeInTransaction(tx,id,u,reason));}
  async concludeInTransaction(tx,id,u,reason){

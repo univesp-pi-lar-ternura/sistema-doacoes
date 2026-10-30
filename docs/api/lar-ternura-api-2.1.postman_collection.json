@@ -56,6 +56,16 @@
       "type": "string"
     },
     {
+      "key": "periodo_de",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "periodo_ate",
+      "value": "",
+      "type": "string"
+    },
+    {
       "key": "horario",
       "value": "14:00",
       "type": "string"
@@ -920,7 +930,7 @@
           "name": "GET /admin/agendamentos — Consultar agendamentos e contatos",
           "request": {
             "method": "GET",
-            "description": "Retorna lista paginada, ordenada por data_hora_agendada DESC e id_agendamento DESC. Busca literal e sem diferença de caixa por nome/email; código com ou sem #; telefone por 4 ou mais dígitos, ignorando formatação. Não remove acentos. Código fora do intervalo inteiro não provoca erro. Contatos exigem sessão administrativa.",
+            "description": "Retorna lista paginada, ordenada por data_hora_agendada DESC e id_agendamento DESC. Busca literal e sem diferença de caixa por nome/email; código com ou sem #; telefone por 4 ou mais dígitos, ignorando formatação. Não remove acentos. Código fora do intervalo inteiro não provoca erro. Contatos exigem sessão administrativa. Os limites de e ate são opcionais e inclusivos, pela data local de America/Sao_Paulo. Quando combinados com data, todos os filtros são aplicados em conjunto (interseção); data fora do intervalo retorna lista vazia. Limites omitidos não restringem aquele lado do período. Datas vazias, inexistentes, com formato inválido ou de maior que ate retornam 422. A ordenação permanece data_hora_agendada DESC, id_agendamento DESC antes da paginação.",
             "header": [],
             "url": {
               "raw": "{{base_url}}/admin/agendamentos",
@@ -955,6 +965,16 @@
                 {
                   "key": "q",
                   "value": "Maria",
+                  "disabled": true
+                },
+                {
+                  "key": "de",
+                  "value": "{{periodo_de}}",
+                  "disabled": true
+                },
+                {
+                  "key": "ate",
+                  "value": "{{periodo_ate}}",
                   "disabled": true
                 }
               ]
@@ -1104,7 +1124,7 @@
           "name": "GET /doacoes — Listar recebimentos físicos",
           "request": {
             "method": "GET",
-            "description": "Listar recebimentos físicos",
+            "description": "Lista paginada de recebimentos físicos, ordenada por ocorrido_em DESC, com desempate pelo id_recebimento numérico DESC. A ordenação é aplicada antes de limit e offset e inclui os status existentes, inclusive estornos.",
             "header": [],
             "url": {
               "raw": "{{base_url}}/doacoes",

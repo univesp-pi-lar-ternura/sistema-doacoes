@@ -1489,6 +1489,28 @@
             },
             "description": "Código, nome, email ou telefone. Caracteres % e _ são literais.",
             "example": "Maria"
+          },
+          {
+            "name": "de",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Início inclusivo pela data da entrega em America/Sao_Paulo. Formato AAAA-MM-DD, de 2000 a 2099. Pode ser usado sozinho ou com o outro limite, data, q, status, limit e offset.",
+            "example": "2026-10-01"
+          },
+          {
+            "name": "ate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Fim inclusivo pela data da entrega em America/Sao_Paulo. Formato AAAA-MM-DD, de 2000 a 2099. Pode ser usado sozinho ou com o outro limite, data, q, status, limit e offset.",
+            "example": "2026-10-31"
           }
         ],
         "responses": {
@@ -1514,9 +1536,19 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Data inválida ou inexistente, parâmetros repetidos/estruturados inválidos, de maior que ate, busca/status/paginação inválidos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
           }
         },
-        "description": "Retorna lista paginada, ordenada por data_hora_agendada DESC e id_agendamento DESC. Busca literal e sem diferença de caixa por nome/email; código com ou sem #; telefone por 4 ou mais dígitos, ignorando formatação. Não remove acentos. Código fora do intervalo inteiro não provoca erro. Contatos exigem sessão administrativa."
+        "description": "Retorna lista paginada, ordenada por data_hora_agendada DESC e id_agendamento DESC. Busca literal e sem diferença de caixa por nome/email; código com ou sem #; telefone por 4 ou mais dígitos, ignorando formatação. Não remove acentos. Código fora do intervalo inteiro não provoca erro. Contatos exigem sessão administrativa. Os limites de e ate são opcionais e inclusivos, pela data local de America/Sao_Paulo. Quando combinados com data, todos os filtros são aplicados em conjunto (interseção); data fora do intervalo retorna lista vazia. Limites omitidos não restringem aquele lado do período. Datas vazias, inexistentes, com formato inválido ou de maior que ate retornam 422. A ordenação permanece data_hora_agendada DESC, id_agendamento DESC antes da paginação."
       }
     },
     "/admin/agendamentos/{id}": {
@@ -1751,7 +1783,8 @@
               }
             }
           }
-        }
+        },
+        "description": "Lista paginada de recebimentos físicos, ordenada por ocorrido_em DESC, com desempate pelo id_recebimento numérico DESC. A ordenação é aplicada antes de limit e offset e inclui os status existentes, inclusive estornos."
       }
     },
     "/doacoes/{id}": {

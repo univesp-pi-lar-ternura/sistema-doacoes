@@ -24,7 +24,7 @@ for(const [path,operations] of Object.entries(spec.paths))for(const [method,op] 
  const parameters=op.parameters??[];
  const urlPath=path.replace(/\{([^}]+)\}/g,(_,key)=>`{{${key}}}`);
  const request={method:method.toUpperCase(),description:op.description??op.summary,header:[],url:{raw:'{{base_url}}'+urlPath,host:['{{base_url}}'],path:urlPath.slice(1).split('/')}};
- const query=parameters.filter(p=>p.in==='query').map(p=>({key:p.name,value:p.name==='status'?'Pendente,Confirmado':p.name==='q'?'Maria':p.name==='mes'?'{{mes}}':p.name==='data'?'{{data_agendamento}}':String(p.schema?.default??''),disabled:true}));
+ const query=parameters.filter(p=>p.in==='query').map(p=>({key:p.name,value:p.name==='status'?'Pendente,Confirmado':p.name==='q'?'Maria':p.name==='mes'?'{{mes}}':p.name==='data'?'{{data_agendamento}}':p.name==='de'?'{{periodo_de}}':p.name==='ate'?'{{periodo_ate}}':String(p.schema?.default??''),disabled:true}));
  if(query.length)request.url.query=query;
  if(op.security?.length){const session=Object.keys(op.security[0])[0];request.auth={type:'bearer',bearer:[{key:'token',value:session==='SessaoONG'?'{{ong_token}}':'{{token_agendamento}}',type:'string'}]};}
  const events=[];
@@ -44,7 +44,7 @@ for(const [path,operations] of Object.entries(spec.paths))for(const [method,op] 
  if(path==='/agendamentos')events.push({listen:'test',script:{type:'text/javascript',exec:["if ([200,201].includes(pm.response.code)) { const b=pm.response.json(); pm.collectionVariables.set('id', String(b.agendamento.id_agendamento)); pm.collectionVariables.set('token_agendamento', b.token_acesso); }"]}});
  groups.get(tag).push({name:request.method+' '+path+' — '+op.summary,request,...(events.length?{event:events}:{})});
 }
-const variables={base_url:'http://127.0.0.1:3000',ong_email:'',ong_senha:'',ong_token:'',token_agendamento:'',id:'1',ano:'2026',mes:'2026-10',id_necessidade:'1',data_agendamento:'',horario:'14:00',ocorrido_em:''};
+const variables={base_url:'http://127.0.0.1:3000',ong_email:'',ong_senha:'',ong_token:'',token_agendamento:'',id:'1',ano:'2026',mes:'2026-10',id_necessidade:'1',data_agendamento:'',periodo_de:'',periodo_ate:'',horario:'14:00',ocorrido_em:''};
 const collection={info:{name:'Lar Ternura — API '+spec.info.version,schema:'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',description:'Coleção gerada do OpenAPI. Use somente ambiente autorizado. Configure data/IDs retornados pela API e credenciais privadas. Chaves de idempotência são geradas uma vez por operação e mantidas para retry: apague a variável chave_* ao iniciar outra operação. Não execute Run collection indiscriminadamente: há rotas de escrita. O token do agendamento é diferente da sessão ONG.'},variable:Object.entries(variables).map(([key,value])=>({key,value,type:'string'})),item:[...groups].map(([name,item])=>({name,item}))};
 writeFileSync(join(__dirname,'../../docs/api/lar-ternura-api-2.1.postman_collection.json'),JSON.stringify(collection,null,2)+'\n');
 console.log('Coleção Postman exportada, sem executar requisições.');

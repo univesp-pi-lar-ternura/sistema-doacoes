@@ -15,3 +15,11 @@ Não comprova concorrência com conexões PostgreSQL independentes, produção, 
 ## Complemento de 26/10/2026
 
 A correção de concorrência preservou os 95 testes anteriores. Além deles, nove casos de concorrência passaram em PostgreSQL 17.11 local, com sessões independentes, READ COMMITTED e role limitada (104 casos entre as duas suítes). A falha original foi reproduzida no código anterior. Os novos testes cobrem as duas ordens de execução, SQL direto, múltiplos produtos, ausência real de meta, repetição idempotente, rollback e ordem numérica de travas. Resultados: RESULTADO-REGRESSAO-CONCORRENCIA.txt e RESULTADO-POSTGRES-CONCORRENCIA.txt. O teste anterior em REPRODUCAO-ANTES-DA-CORRECAO.txt falha intencionalmente para demonstrar o defeito. Nenhuma validação nova foi feita no Neon nesta preparação.
+
+## Complemento após a E2 — 28/10/2026
+
+Ambiente alinhado a Node.js 22 (22.13.0 ou posterior da série 22) e pnpm 11.25.0. O campo packageManager já estava fixado e foi preservado. O arquivo backend/pnpm-workspace.yaml registra allowBuilds com @scarf/scarf: false, sem desativar globalmente a verificação de scripts de dependências.
+
+GET /admin/agendamentos aceita de e ate opcionais e inclusivos pela data da entrega em America/Sao_Paulo. Mantém data, q, status CSV, limit e offset; filtros simultâneos usam interseção. Formato inválido, data inexistente ou de maior que ate retorna 422. GET /doacoes mantém ocorrido_em decrescente e agora desempata pelo ID numérico decrescente, antes da paginação.
+
+Guia e evidências: docs/api/AJUSTES-POS-E2-28-10-2026.md. Este complemento pressupõe a integração do PR #36 e preserva sua correção de concorrência. Nenhuma alteração em frontend, SQL, migrations, dados, capacidade, feriados ou ambiente publicado.
