@@ -7,7 +7,10 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:cloudflare": "node scripts/build-cloudflare.mjs",
+    "deploy:cloudflare": "npm run build:cloudflare && wrangler deploy",
+    "check:cloudflare": "npm run build:cloudflare && wrangler deploy --dry-run"
   },
   "dependencies": {
     "react": "18.3.1",
@@ -19,6 +22,7 @@
     "@vitejs/plugin-react": "4.7.0",
     "tailwindcss": "4.1.11",
     "vite": "5.4.21",
-    "vitest": "2.1.9"
+    "vitest": "2.1.9",
+    "wrangler": "4.155.0"
   }
 }

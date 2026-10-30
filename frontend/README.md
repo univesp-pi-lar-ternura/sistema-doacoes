@@ -1,6 +1,8 @@
 # Frontend: Sistema de Doações Lar Ternura
 
-React 18 + Tailwind CSS 4 + Vite 5. Consome a **API 2.0.0** (`openapi.json`): área do doador e painel da ONG.
+Publicação no Cloudflare: veja [configuração e conferência de implantação](../docs/PUBLICACAO_CLOUDFLARE.md).
+
+React 18 + Tailwind CSS 4 + Vite 5. Consome a **API 2.1.0** (`openapi.json`): área do doador e painel da ONG.
 
 ## Rodar localmente
 
@@ -22,15 +24,14 @@ Com `VITE_USAR_MOCK=true` no `.env.local`, o front usa um servidor simulado que 
 
 Conta de demonstração: `admin@demo.org`, senha `demo12345`.
 
-O simulador já segue o contrato proposto no PDF "Ajustes no backend: itens 1, 3 e 9", que ainda
-precisa ser implementado na API real:
+O backend integrado à `develop` já oferece os recursos usados pelo painel:
 
 - `GET /admin/agendamentos` do mais recente para o mais antigo, com `q` (código, nome, telefone
   ou e-mail) e `status` com vários valores (`Pendente,Confirmado`);
 - `quantidade_recebida` em cada item do agendamento;
 - `POST /admin/agendamentos/{id}/receber-e-concluir`, que registra o que chegou e conclui de uma vez.
 
-Enquanto a API não tiver essas mudanças, a tela **Doações agendadas** só funciona no modo simulado.
+A tela **Doações agendadas** pode usar a API real quando essa versão estiver publicada e configurada. O funcionamento do simulador, isoladamente, não comprova integração.
 
 **Para usar a API real:**
 
@@ -44,7 +45,8 @@ Enquanto a API não tiver essas mudanças, a tela **Doações agendadas** só fu
 | --- | --- |
 | `npm run dev` | Servidor de desenvolvimento |
 | `npm run build` | Gera `dist/` para publicação |
-| `npm test` | 40 testes: servidor simulado, camada da API (paginação) e utilitários de datas e unidades |
+| `npm test` | 55 testes: simulador, camada da API, utilitários e configuração Cloudflare |
+| `npm run check:cloudflare` | Build com configuração real e dry-run do Wrangler; não publica |
 
 ## Estrutura
 
