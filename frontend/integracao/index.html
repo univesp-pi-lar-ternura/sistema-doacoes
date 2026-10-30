@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agendar entrega · Lar Ternura</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./agendamento.mjs"></script>
+</head>
+<body>
+  <header><a href="#conteudo" class="skip">Ir para o formulário</a><p class="marca">Lar Ternura</p><span>Página de integração</span></header>
+  <main id="conteudo">
+    <h1>Agendar uma entrega</h1>
+    <p>Escolha o item, a data e um horário disponível para sua doação.</p>
+    <p class="nota">Esta página valida a integração e ainda será incorporada à interface da equipe. Use dados fictícios nos ensaios.</p>
+    <p id="carregamento" role="status">Carregando necessidades…</p>
+    <button id="recarregar" type="button" hidden>Tentar carregar novamente</button>
+    <form id="agendamento">
+      <fieldset id="campos" disabled>
+        <legend>Sua entrega</legend>
+        <label for="item">Item necessário</label>
+        <select id="item" required><option value="">Selecione um item</option></select>
+        <label for="quantidade">Quantidade a doar</label>
+        <input id="quantidade" type="number" min="1" max="2147483647" step="1" value="1" required>
+        <div class="dupla">
+          <div><label for="data">Data da entrega</label><input id="data" type="date" required aria-describedby="calendario"></div>
+          <div><label for="horario">Horário disponível</label><select id="horario" required disabled><option value="">Escolha primeiro a data</option></select></div>
+        </div>
+        <p id="calendario" class="aviso" role="status" aria-live="polite" aria-atomic="true">Escolha uma data para consultar as informações de calendário.</p>
+        <p id="vagas" role="status" aria-live="polite"></p>
+        <button id="reconsultar" type="button" hidden>Consultar horários novamente</button>
+        <label for="nome">Nome</label><input id="nome" autocomplete="name" minlength="2" maxlength="100" required>
+        <label for="email">E-mail</label><input id="email" type="email" autocomplete="email" maxlength="100" required>
+        <label for="telefone">Telefone com DDD</label><input id="telefone" type="tel" autocomplete="tel" minlength="8" maxlength="20" required>
+        <label for="tipo">Tipo de doador</label><select id="tipo"><option value="PF">Pessoa física</option><option value="PJ">Pessoa jurídica</option></select>
+      </fieldset>
+      <p id="erro" role="alert" tabindex="-1" hidden></p>
+      <button id="enviar" type="submit" disabled>Confirmar agendamento</button>
+    </form>
+    <section id="sucesso" hidden aria-labelledby="titulo-sucesso">
+      <h2 id="titulo-sucesso" tabindex="-1">Agendamento registrado</h2>
+      <p id="resumo"></p>
+      <label for="codigo">Código privado do agendamento</label>
+      <input id="codigo" type="password" readonly autocomplete="off" aria-describedby="orientacao-codigo">
+      <button id="mostrar-codigo" type="button" aria-pressed="false">Mostrar código</button>
+      <p id="orientacao-codigo">Guarde esse código em local seguro para consultar seu agendamento. Ele não fica salvo neste navegador. Não o publique.</p>
+    </section>
+    <footer>Informação de calendário: BrasilAPI. Horários e vagas: sistema do Lar Ternura.</footer>
+  </main>
+</body>
+</html>

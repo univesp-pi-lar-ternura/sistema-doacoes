@@ -1,0 +1,3 @@
+# Decisão explícita para o script de instalação transitivo do Swagger.
+allowBuilds:
+  '@scarf/scarf': false

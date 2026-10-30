@@ -1,0 +1,3181 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Lar Ternura — API compatível com banco Vinicius",
+    "version": "2.1.0",
+    "description": "API E1: busca administrativa, recebimento e conclusão atômicos, agendamentos permitidos após meta atingida. Sem controle de estoque físico. Consulta BrasilAPI permanece informativa."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Mesma origem em que a API está sendo acessada; também funciona em desenvolvimento local."
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Verificar processo",
+        "operationId": "get_health",
+        "tags": [
+          "Público"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "summary": "Verificar banco e complemento instalados",
+        "operationId": "get_ready",
+        "tags": [
+          "Público"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Estrutura incompatível (ESTRUTURA_INCOMPATIVEL) ou banco indisponível (SERVICO_INDISPONIVEL). Sem detalhes internos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "description": "Confere estrutura do complemento a cada chamada usando o mesmo contrato da migração. Divergências impedem prontidão; /health verifica somente o processo."
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Autenticar administrador ativo",
+        "operationId": "post_auth_login",
+        "tags": [
+          "Público"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResposta"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginEntrada"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Consultar sessão ativa",
+        "operationId": "get_auth_me",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Revogar sessão",
+        "operationId": "post_auth_logout",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Sucesso sem corpo"
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categorias": {
+      "get": {
+        "summary": "Listar urgências em ordem",
+        "operationId": "get_categorias",
+        "tags": [
+          "Público"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Categoria"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/itens": {
+      "get": {
+        "summary": "Consultar termômetro de metas abertas",
+        "operationId": "get_itens",
+        "tags": [
+          "Público"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoria",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "prioridade",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NecessidadePublica"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "description": "Consulta paginada de necessidades abertas de produtos ativos, incluindo metas já atingidas. Retorna quantidade_meta, quantidade_arrecadada e quantidade_faltante (mínimo zero), com unidade de cada produto. Use limit/offset até obter página vazia. Não soma unidades diferentes. Recebimentos confirmados entram no total; promessas não entram. Base para a tela de consulta e PDF do frontend. Histórico fechado em /admin/necessidades/historico."
+      },
+      "post": {
+        "summary": "Cadastrar produto, sem criar meta",
+        "operationId": "post_itens",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Produto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProdutoEntrada"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/necessidades": {
+      "get": {
+        "summary": "Consultar termômetro de metas abertas",
+        "operationId": "get_necessidades",
+        "tags": [
+          "Público"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoria",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "prioridade",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NecessidadePublica"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "description": "Consulta paginada de necessidades abertas de produtos ativos, incluindo metas já atingidas. Retorna quantidade_meta, quantidade_arrecadada e quantidade_faltante (mínimo zero), com unidade de cada produto. Use limit/offset até obter página vazia. Não soma unidades diferentes. Recebimentos confirmados entram no total; promessas não entram. Base para a tela de consulta e PDF do frontend. Histórico fechado em /admin/necessidades/historico."
+      }
+    },
+    "/itens/{id}": {
+      "get": {
+        "summary": "Consultar meta aberta pelo ID do produto",
+        "operationId": "get_itens_id",
+        "tags": [
+          "Público"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NecessidadePublica"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualizar produto, preservando unidade em uso",
+        "operationId": "put_itens_id",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Produto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProdutoEntrada"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Desativar produto sem apagar histórico",
+        "operationId": "delete_itens_id",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Sucesso sem corpo"
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/itens": {
+      "get": {
+        "summary": "Listar catálogo completo, inclusive inativos",
+        "operationId": "get_admin_itens",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Produto"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/itens/{id}": {
+      "get": {
+        "summary": "Consultar produto do catálogo",
+        "operationId": "get_admin_itens_id",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Produto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/necessidades": {
+      "post": {
+        "summary": "Abrir meta independente",
+        "operationId": "post_admin_necessidades",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meta"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetaEntrada"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/necessidades/{id}/encerrar": {
+      "patch": {
+        "summary": "Encerrar/cancelar meta, sem apagar recebimentos",
+        "operationId": "patch_admin_necessidades_id_encerrar",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meta"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/necessidades/{id}/cancelar": {
+      "patch": {
+        "summary": "Encerrar/cancelar meta, sem apagar recebimentos",
+        "operationId": "patch_admin_necessidades_id_cancelar",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meta"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/necessidades/{id}/renovar": {
+      "post": {
+        "summary": "Encerrar meta e criar outra em transação",
+        "operationId": "post_admin_necessidades_id_renovar",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number."
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meta"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenovarEntrada"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/necessidades/historico": {
+      "get": {
+        "summary": "Listar histórico de metas",
+        "operationId": "get_admin_necessidades_historico",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HistoricoMeta"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/arrecadacao/mensal": {
+      "get": {
+        "summary": "Arrecadação efetiva por mês civil de São Paulo",
+        "operationId": "get_admin_arrecadacao_mensal",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          },
+          {
+            "name": "mes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^20[0-9]{2}-(0[1-9]|1[0-2])$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Mensal"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/disponibilidade": {
+      "get": {
+        "summary": "Consultar capacidade, incluindo Pendente e Confirmado",
+        "operationId": "get_disponibilidade",
+        "tags": [
+          "Público"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Disponibilidade"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agendamentos": {
+      "post": {
+        "summary": "Registrar promessa vinculada à meta selecionada",
+        "operationId": "post_agendamentos",
+        "tags": [
+          "Público"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "description": "Preserve a mesma chave E o mesmo corpo no retry. Corpo/usuário diferente retorna 409."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Repetição idempotente: mesmo resultado original, sem nova gravação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgendamentoResposta"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgendamentoResposta"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgendamentoEntrada"
+              }
+            }
+          }
+        },
+        "description": "Permite agendar necessidades abertas de produtos ativos mesmo com meta atingida. Exige id_necessidade atual; metas encerradas/canceladas/renovadas e produtos inativos continuam sendo recusados. A promessa não altera a arrecadação confirmada."
+      }
+    },
+    "/agendamentos/{id}": {
+      "get": {
+        "summary": "Consultar com código privado",
+        "operationId": "get_agendamentos_id",
+        "tags": [
+          "Agendamento privado"
+        ],
+        "security": [
+          {
+            "TokenAgendamento": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agendamento"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agendamentos/{id}/cancelar": {
+      "patch": {
+        "summary": "Alterar antes de iniciar recebimento",
+        "operationId": "patch_agendamentos_id_cancelar",
+        "tags": [
+          "Agendamento privado"
+        ],
+        "security": [
+          {
+            "TokenAgendamento": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agendamento"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agendamentos/{id}/remarcar": {
+      "patch": {
+        "summary": "Alterar antes de iniciar recebimento",
+        "operationId": "patch_agendamentos_id_remarcar",
+        "tags": [
+          "Agendamento privado"
+        ],
+        "security": [
+          {
+            "TokenAgendamento": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agendamento"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemarcarEntrada"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/agendamentos/{id}/cancelar": {
+      "patch": {
+        "summary": "Alterar antes de iniciar recebimento",
+        "operationId": "patch_admin_agendamentos_id_cancelar",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agendamento"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/agendamentos/{id}/remarcar": {
+      "patch": {
+        "summary": "Alterar antes de iniciar recebimento",
+        "operationId": "patch_admin_agendamentos_id_remarcar",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agendamento"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemarcarEntrada"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/agendamentos": {
+      "get": {
+        "summary": "Consultar agendamentos e contatos",
+        "operationId": "get_admin_agendamentos",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          },
+          {
+            "name": "data",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 4,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Pendente",
+                  "Confirmado",
+                  "Concluído",
+                  "Cancelado"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false,
+            "example": [
+              "Pendente",
+              "Confirmado"
+            ],
+            "description": "Um ou mais status separados por vírgula. Sem filtro quando omitido."
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "description": "Código, nome, email ou telefone. Caracteres % e _ são literais.",
+            "example": "Maria"
+          },
+          {
+            "name": "de",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Início inclusivo pela data da entrega em America/Sao_Paulo. Formato AAAA-MM-DD, de 2000 a 2099. Pode ser usado sozinho ou com o outro limite, data, q, status, limit e offset.",
+            "example": "2026-10-01"
+          },
+          {
+            "name": "ate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Fim inclusivo pela data da entrega em America/Sao_Paulo. Formato AAAA-MM-DD, de 2000 a 2099. Pode ser usado sozinho ou com o outro limite, data, q, status, limit e offset.",
+            "example": "2026-10-31"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Agendamento"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Data inválida ou inexistente, parâmetros repetidos/estruturados inválidos, de maior que ate, busca/status/paginação inválidos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "description": "Retorna lista paginada, ordenada por data_hora_agendada DESC e id_agendamento DESC. Busca literal e sem diferença de caixa por nome/email; código com ou sem #; telefone por 4 ou mais dígitos, ignorando formatação. Não remove acentos. Código fora do intervalo inteiro não provoca erro. Contatos exigem sessão administrativa. Os limites de e ate são opcionais e inclusivos, pela data local de America/Sao_Paulo. Quando combinados com data, todos os filtros são aplicados em conjunto (interseção); data fora do intervalo retorna lista vazia. Limites omitidos não restringem aquele lado do período. Datas vazias, inexistentes, com formato inválido ou de maior que ate retornam 422. A ordenação permanece data_hora_agendada DESC, id_agendamento DESC antes da paginação."
+      }
+    },
+    "/admin/agendamentos/{id}": {
+      "get": {
+        "summary": "Consultar agendamento administrativo",
+        "operationId": "get_admin_agendamentos_id",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agendamento"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/agendamentos/{id}/concluir": {
+      "patch": {
+        "summary": "Concluir entrega por decisão administrativa",
+        "operationId": "patch_admin_agendamentos_id_concluir",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agendamento"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConclusaoEntrada"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/doacoes": {
+      "post": {
+        "summary": "Registrar quantidades efetivas e confirmar recebimento",
+        "operationId": "post_doacoes",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Preserve a mesma chave E o mesmo corpo no retry. Corpo/usuário diferente retorna 409."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Repetição idempotente: mesmo resultado original, sem nova gravação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecebimentoResposta"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecebimentoResposta"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecebimentoEntrada"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Listar recebimentos físicos",
+        "operationId": "get_doacoes",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Recebimento"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "description": "Lista paginada de recebimentos físicos, ordenada por ocorrido_em DESC, com desempate pelo id_recebimento numérico DESC. A ordenação é aplicada antes de limit e offset e inclui os status existentes, inclusive estornos."
+      }
+    },
+    "/doacoes/{id}": {
+      "get": {
+        "summary": "Consultar recebimento e itens",
+        "operationId": "get_doacoes_id",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recebimento"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/doacoes/{id}/estornar": {
+      "patch": {
+        "summary": "Estornar recebimento preservando registro",
+        "operationId": "patch_doacoes_id_estornar",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recebimento"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "400 JSON; 401 autenticação; 403 origem/cargo; 404 registro; 409 conflito/regra do banco; 413 corpo >32KB; 422 validação; 429 tentativas; 503 banco/esquema indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstornoEntrada"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calendario/feriados/{ano}": {
+      "get": {
+        "summary": "Consultar calendário informativo da BrasilAPI",
+        "operationId": "get_calendario_feriados",
+        "tags": [
+          "Público"
+        ],
+        "security": [],
+        "description": "Consulta opcional. Não bloqueia agendamentos nem altera vagas. HTTP 200 também pode conter status indisponivel; nesse caso feriados é null. Datas e tipos são informações do provedor, não regra de funcionamento da ONG.",
+        "parameters": [
+          {
+            "name": "ano",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1900,
+              "maximum": 2199
+            },
+            "example": 2026
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estado explícito da consulta de calendário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendarioFeriados"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Ano inválido"
+          }
+        }
+      }
+    },
+    "/admin/agendamentos/{id}/receber-e-concluir": {
+      "post": {
+        "summary": "Registrar chegada e concluir agendamento numa transação",
+        "operationId": "post_admin_agendamentos_id_receber_e_concluir",
+        "tags": [
+          "ONG"
+        ],
+        "security": [
+          {
+            "SessaoONG": []
+          }
+        ],
+        "description": "Trava o agendamento e usa a meta aberta atual por produto; sem meta aberta, registra sem vínculo. Aceita atrasados. Idempotência compara administrador, agendamento e corpo, e não permite reutilizar a chave em POST /doacoes. Produto inativo com saldo a receber gera 409. Repetição de concluído não cria doação adicional. Datas de recebimento são atribuídas pelo servidor. Se a meta mudar enquanto sua trava é obtida, a API relê a seleção. Após cinco tentativas sem estabilização, retorna 409 META_EM_ALTERACAO e desfaz a operação; a mesma chave pode ser usada no retry.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID preservado em retries do mesmo corpo. Use nova chave para outra operação."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReceberConcluirEntrada"
+              },
+              "examples": {
+                "integral": {
+                  "value": {}
+                },
+                "parcial": {
+                  "value": {
+                    "itens": [
+                      {
+                        "id_item": 1,
+                        "quantidade_recebida": 3
+                      }
+                    ],
+                    "motivo_pendencias": "Trouxe somente parte da promessa"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recebimento e conclusão confirmados, ou resposta idempotente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReceberConcluirResposta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sessão administrativa necessária.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Cargo sem permissão.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Agendamento inexistente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Cancelado, produto inativo, chave reutilizada ou entrega parcial sem motivo. Toda a operação é desfeita. Inclui META_EM_ALTERACAO: metas mudando repetidamente; nenhum recebimento desta tentativa foi gravado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Corpo/chave inválidos, item não pendente ou quantidade superior ao restante da promessa.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Banco indisponível.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "SessaoONG": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token de administrador ativo."
+      },
+      "TokenAgendamento": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Código privado de um único agendamento; não é sessão da ONG."
+      }
+    },
+    "schemas": {
+      "Erro": {
+        "type": "object",
+        "properties": {
+          "erro": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "codigo": {
+                "type": "string"
+              },
+              "mensagem": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "codigo",
+              "mensagem"
+            ]
+          },
+          "request_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "erro",
+          "request_id"
+        ]
+      },
+      "ProdutoEntrada": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nome_item": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "unidade_medida": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "categoria_suprimento": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "id_categoria": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          }
+        },
+        "required": [
+          "nome_item",
+          "unidade_medida",
+          "categoria_suprimento",
+          "id_categoria"
+        ]
+      },
+      "Produto": {
+        "type": "object",
+        "properties": {
+          "id_item": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "nome_item": {
+            "type": "string"
+          },
+          "unidade_medida": {
+            "type": "string"
+          },
+          "categoria_suprimento": {
+            "type": "string"
+          },
+          "id_categoria": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "ativo": {
+            "type": "boolean"
+          }
+        }
+      },
+      "MetaEntrada": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id_item": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "id_categoria": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "quantidade_meta": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          }
+        },
+        "required": [
+          "id_item",
+          "id_categoria",
+          "quantidade_meta"
+        ]
+      },
+      "RenovarEntrada": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id_categoria": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "quantidade_meta": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          }
+        },
+        "required": [
+          "id_categoria",
+          "quantidade_meta"
+        ]
+      },
+      "Meta": {
+        "type": "object",
+        "properties": {
+          "id_necessidade": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number."
+          },
+          "id_item": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "quantidade_meta": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Aberta",
+              "Encerrada",
+              "Cancelada"
+            ]
+          }
+        }
+      },
+      "NecessidadePublica": {
+        "type": "object",
+        "required": [
+          "id_item",
+          "id_necessidade",
+          "quantidade_meta",
+          "quantidade_arrecadada",
+          "quantidade_necessaria",
+          "quantidade_atual"
+        ],
+        "properties": {
+          "id_item": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "id_necessidade": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number."
+          },
+          "nome_item": {
+            "type": "string"
+          },
+          "unidade_medida": {
+            "type": "string"
+          },
+          "categoria_suprimento": {
+            "type": "string"
+          },
+          "id_categoria": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "ativo": {
+            "type": "boolean"
+          },
+          "prioridade": {
+            "type": "string"
+          },
+          "cor_indicador": {
+            "type": "string"
+          },
+          "nivel_ordem": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Aberta"
+            ]
+          },
+          "quantidade_meta": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "quantidade_arrecadada": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "quantidade_faltante": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "percentual_atendimento": {
+            "type": "number",
+            "minimum": 0
+          },
+          "percentual_barra": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "meta_atingida": {
+            "type": "boolean"
+          },
+          "quantidade_necessaria": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "description": "Alias de quantidade_meta; não é coluna do catálogo."
+          },
+          "quantidade_atual": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Alias de quantidade_arrecadada; não é estoque físico."
+          },
+          "prazo_necessidade": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sempre null: modelo sem prazo obrigatório."
+          },
+          "descricao": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sempre null nesta versão."
+          }
+        }
+      },
+      "DoadorEntrada": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 100
+          },
+          "telefone": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "tipo_doador": {
+            "type": "string",
+            "enum": [
+              "PF",
+              "PJ"
+            ],
+            "default": "PF"
+          }
+        },
+        "required": [
+          "nome",
+          "email",
+          "telefone"
+        ]
+      },
+      "ItemPromessa": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id_item": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "id_necessidade": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number."
+          },
+          "quantidade_doada": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          }
+        },
+        "required": [
+          "id_item",
+          "id_necessidade",
+          "quantidade_doada"
+        ]
+      },
+      "AgendamentoEntrada": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "doador": {
+            "$ref": "#/components/schemas/DoadorEntrada"
+          },
+          "data": {
+            "type": "string",
+            "format": "date"
+          },
+          "horario": {
+            "type": "string",
+            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "itens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemPromessa"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "doador",
+          "data",
+          "horario",
+          "itens"
+        ]
+      },
+      "RemarcarEntrada": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "string",
+            "format": "date"
+          },
+          "horario": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "horario"
+        ]
+      },
+      "Agendamento": {
+        "type": "object",
+        "properties": {
+          "id_agendamento": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "data_hora_agendada": {
+            "type": "string",
+            "description": "AAAA-MM-DDTHH:mm:ss, hora LOCAL de America/Sao_Paulo; sem sufixo UTC."
+          },
+          "status_agendamento": {
+            "type": "string",
+            "enum": [
+              "Pendente",
+              "Confirmado",
+              "Concluído",
+              "Cancelado"
+            ]
+          },
+          "fuso_horario": {
+            "type": "string",
+            "enum": [
+              "America/Sao_Paulo"
+            ]
+          },
+          "itens": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id_item": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                },
+                "id_necessidade": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number.",
+                  "nullable": true
+                },
+                "nome_item": {
+                  "type": "string"
+                },
+                "unidade_medida": {
+                  "type": "string"
+                },
+                "quantidade_doada": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                },
+                "status_item": {
+                  "type": "string",
+                  "enum": [
+                    "Agendado",
+                    "Entregue",
+                    "Cancelado"
+                  ]
+                },
+                "quantidade_recebida": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Soma de todos os recebimentos confirmados deste item/agendamento, sem limite de 100 registros e excluindo estornos. Não é quantidade prometida nem saldo físico."
+                }
+              }
+            }
+          },
+          "doador": {
+            "type": "object",
+            "description": "Somente nas rotas administrativas; inclui contatos e tipo PF/PJ."
+          }
+        }
+      },
+      "AgendamentoResposta": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "agendamento": {
+            "$ref": "#/components/schemas/Agendamento"
+          },
+          "token_acesso": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "repetido": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "agendamento",
+          "token_acesso",
+          "repetido"
+        ]
+      },
+      "ItemRecebidoEntrada": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id_item": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "id_necessidade": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "description": "Obrigatório. null significa entrega sem vínculo com meta; entra apenas no histórico mensal.",
+            "nullable": true
+          },
+          "quantidade_recebida": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          }
+        },
+        "required": [
+          "id_item",
+          "id_necessidade",
+          "quantidade_recebida"
+        ]
+      },
+      "RecebimentoEntrada": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id_agendamento": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "nullable": true
+          },
+          "id_doador": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "nullable": true,
+            "description": "Derivado do agendamento quando informado; opcional em entrega espontânea."
+          },
+          "ocorrido_em": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data real já ocorrida com fuso explícito, por exemplo 2026-10-12T14:00:00-03:00."
+          },
+          "itens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemRecebidoEntrada"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "ocorrido_em",
+          "itens"
+        ]
+      },
+      "Recebimento": {
+        "type": "object",
+        "properties": {
+          "id_recebimento": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number."
+          },
+          "id_doacao": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "description": "Alias do ID de recebimento para preservar /doacoes."
+          },
+          "chave_operacao": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id_agendamento": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "nullable": true
+          },
+          "id_doador": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "nullable": true
+          },
+          "ocorrido_em": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Rascunho",
+              "Confirmado",
+              "Estornado"
+            ]
+          },
+          "registrado_por": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "confirmado_por": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "nullable": true
+          },
+          "estornado_por": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "nullable": true
+          },
+          "motivo_estorno": {
+            "type": "string",
+            "nullable": true
+          },
+          "itens": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id_item": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                },
+                "id_necessidade": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number.",
+                  "nullable": true
+                },
+                "quantidade_recebida": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                },
+                "nome_item_registrado": {
+                  "type": "string"
+                },
+                "unidade_registrada": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "RecebimentoResposta": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "doacao": {
+            "$ref": "#/components/schemas/Recebimento"
+          },
+          "repetido": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "doacao",
+          "repetido"
+        ]
+      },
+      "LoginEntrada": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "senha": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "email",
+          "senha"
+        ]
+      },
+      "LoginResposta": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "Bearer"
+            ]
+          },
+          "expira_em": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "usuario": {
+            "type": "object"
+          }
+        }
+      },
+      "EstornoEntrada": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "motivo": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "motivo"
+        ]
+      },
+      "ConclusaoEntrada": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "motivo_pendencias": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "description": "Obrigatório quando restam quantidades prometidas. Itens incompletos são encerrados como Cancelado; recebimentos são preservados."
+          }
+        }
+      },
+      "Disponibilidade": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "string",
+            "format": "date"
+          },
+          "fuso_horario": {
+            "type": "string"
+          },
+          "horarios": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "horario": {
+                  "type": "string"
+                },
+                "capacidade": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                },
+                "vagas": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "HistoricoMeta": {
+        "type": "object",
+        "properties": {
+          "id_necessidade": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number."
+          },
+          "id_item": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "nome_item": {
+            "type": "string"
+          },
+          "unidade_medida": {
+            "type": "string"
+          },
+          "quantidade_meta": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "quantidade_arrecadada": {
+            "type": "string"
+          },
+          "quantidade_faltante": {
+            "type": "string"
+          },
+          "percentual_atendimento": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "urgencia": {
+            "type": "string"
+          },
+          "criada_em": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "encerrada_em": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "Mensal": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "mes": {
+            "type": "string",
+            "pattern": "^20[0-9]{2}-(0[1-9]|1[0-2])$"
+          },
+          "id_item": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "nome_item": {
+            "type": "string"
+          },
+          "unidade_medida": {
+            "type": "string"
+          },
+          "quantidade_arrecadada": {
+            "type": "string",
+            "description": "Total decimal inteiro como string para não perder precisão."
+          },
+          "entregas": {
+            "type": "string"
+          }
+        }
+      },
+      "Categoria": {
+        "type": "object",
+        "properties": {
+          "id_categoria": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "nome_categoria": {
+            "type": "string"
+          },
+          "cor_indicador": {
+            "type": "string"
+          },
+          "nivel_ordem": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "descricao_prioridade": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CalendarioFeriados": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "status",
+              "fonte",
+              "ano",
+              "consultado_em",
+              "feriados"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "disponivel"
+                ]
+              },
+              "fonte": {
+                "type": "string",
+                "enum": [
+                  "BrasilAPI"
+                ]
+              },
+              "ano": {
+                "type": "integer"
+              },
+              "consultado_em": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "feriados": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "nome",
+                    "tipo"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "tipo": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "status",
+              "fonte",
+              "ano",
+              "consultado_em",
+              "feriados",
+              "motivo"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "indisponivel"
+                ]
+              },
+              "fonte": {
+                "type": "string",
+                "enum": [
+                  "BrasilAPI"
+                ]
+              },
+              "ano": {
+                "type": "integer"
+              },
+              "consultado_em": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "feriados": {
+                "type": "array",
+                "nullable": true,
+                "enum": [
+                  null
+                ],
+                "items": {
+                  "type": "object"
+                }
+              },
+              "motivo": {
+                "type": "string",
+                "description": "TEMPO_LIMITE, FALHA_DE_REDE, RESPOSTA_INVALIDA ou HTTP_<status>"
+              }
+            }
+          }
+        ]
+      },
+      "ReceberConcluirEntrada": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "{} recebe exatamente o que falta dos itens Agendado. Com itens explícitos, itens omitidos recebem zero. Nenhum item pode exceder a promessa restante; excedentes usam POST /doacoes. Entrega parcial exige motivo. Array vazio com motivo conclui sem criar recebimento vazio.",
+        "properties": {
+          "itens": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id_item",
+                "quantidade_recebida"
+              ],
+              "properties": {
+                "id_item": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                },
+                "quantidade_recebida": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2147483647
+                }
+              }
+            }
+          },
+          "motivo_pendencias": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        }
+      },
+      "ReceberConcluirResposta": {
+        "type": "object",
+        "required": [
+          "agendamento",
+          "doacao",
+          "repetido"
+        ],
+        "properties": {
+          "agendamento": {
+            "$ref": "#/components/schemas/Agendamento"
+          },
+          "doacao": {
+            "type": "object",
+            "properties": {
+              "id_recebimento": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number."
+              },
+              "id_doacao": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "description": "Alias do ID de recebimento para preservar /doacoes."
+              },
+              "chave_operacao": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "id_agendamento": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647,
+                "nullable": true
+              },
+              "id_doador": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647,
+                "nullable": true
+              },
+              "ocorrido_em": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "Rascunho",
+                  "Confirmado",
+                  "Estornado"
+                ]
+              },
+              "registrado_por": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647
+              },
+              "confirmado_por": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647,
+                "nullable": true
+              },
+              "estornado_por": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647,
+                "nullable": true
+              },
+              "motivo_estorno": {
+                "type": "string",
+                "nullable": true
+              },
+              "itens": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id_item": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    },
+                    "id_necessidade": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]{0,18}$",
+                      "description": "ID bigint decimal até 9223372036854775807. Nunca converter para Number.",
+                      "nullable": true
+                    },
+                    "quantidade_recebida": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    },
+                    "nome_item_registrado": {
+                      "type": "string"
+                    },
+                    "unidade_registrada": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "nullable": true,
+            "description": "Recebimento criado nesta operação; null se não houve novas quantidades ou se já estava concluído por outra operação."
+          },
+          "repetido": {
+            "type": "boolean",
+            "description": "true em repetição da chave ou agendamento já concluído."
+          }
+        }
+      }
+    }
+  }
+}

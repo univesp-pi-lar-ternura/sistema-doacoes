@@ -1,0 +1,25 @@
+{
+  "base_develop": "8cebf7dcd40321fb882e701fec9af6f670d426f7",
+  "versao": "2.1.0",
+  "data": "2026-10-23",
+  "arquivos": {
+    "backend/README.md": "0c271b9327aa0e1290adf84d85926bb423a350b257d56a7a8bc58a6866a3f16f",
+    "backend/package.json": "3be71eb79d81757cb7424ed08894b7e348744078b98fe20b5fd44eb732ac0dfd",
+    "backend/pnpm-lock.yaml": "61be0aee22f9e89335bbed671af9a7dc4b64b9efb3c157a6287d24de31164585",
+    "backend/scripts/build-postman.js": "df3471bbd41ecb9445812896fd4bf1bc26f44cdd3a88a5d9b8219573f2065c4f",
+    "backend/scripts/test-fixture.cjs": "d2f93af2b46e6ee77e82b27f27865884278e35752b023639281788b9a9536056",
+    "backend/src/app.js": "cc0ebf8156f69a9a08a43f139f38317a521d08d14d28a4b78ad27ad7779ec54d",
+    "backend/src/documentation.js": "f57c0632a628f03c6cc1e613c11d1307f6f8148799d313987f702be199072ef0",
+    "backend/src/store.js": "13cbb39a2dd1414cd2c57ebfc8b8d942166d132fc29c973508456b5707923130",
+    "backend/src/validation.js": "d2ce8dae13ef2f439648e4e8284f29b10da80e54962b9978b650f7416a76a09f",
+    "backend/test/documentation.test.js": "484112c1e5f0f8611db78ca3e51dab7ad37d952d54097a8d6fd4a398fcb67e65",
+    "backend/test/e1.test.js": "338ff77ac0315f79421c2fbf6c97d90d780854ad19befb0e32b7551b7a45922d",
+    "docs/api/ENTREGA-E1-API-2.1.md": "9a9ed58e11155abdbe9e45aac3055244cb5919505d5db1152aaa502a937c0c9a",
+    "docs/api/MIGRACAO-E-INTEGRACAO.md": "a903831ed0782157a8a619726e7f336ab327bda74c6294e2a0f8284fcf328d47",
+    "docs/api/README.md": "039cc75485faa7787751203103784018ae49aee83898cb87b495112a1c1da800",
+    "docs/api/RESULTADO-TESTES-E1.txt": "dba73202fec926b41d7b0c42b9da202a6f8da4a4968660541492e5fea8a4c33e",
+    "docs/api/VALIDACAO.md": "5f5d826eb6ef35c5840bf3d20586b33f8699c56e977fe51d7c4b5a5dd758ed75",
+    "docs/api/lar-ternura-api-2.1.postman_collection.json": "ee15e256498519534dec02e052dd068acacb13cf71f9eee3df0cc1f3add71f37",
+    "docs/api/openapi.json": "f4a4110de8f8ecf339ab7d883b3be0df3cfd168bda84f0878112ed28271eef05"
+  }
+}

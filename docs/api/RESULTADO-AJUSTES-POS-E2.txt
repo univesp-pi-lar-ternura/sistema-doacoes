@@ -1,0 +1,671 @@
+$ node --test test/brasilapi-feriados.test.js test/calendario-http.test.js test/compatibilidade.test.js test/estrutura.test.js test/e1.test.js test/documentation.test.js test/ajustes-e2.test.js
+TAP version 13
+# Subtest: de sozinho inclui o dia inicial e não limita datas posteriores
+ok 1 - de sozinho inclui o dia inicial e não limita datas posteriores
+  ---
+  duration_ms: 9664.0394
+  type: 'test'
+  ...
+# Subtest: ate sozinho inclui o dia final e não limita datas anteriores
+ok 2 - ate sozinho inclui o dia final e não limita datas anteriores
+  ---
+  duration_ms: 1756.4874
+  type: 'test'
+  ...
+# Subtest: período usa a data de São Paulo em vez da data UTC na virada do dia
+ok 3 - período usa a data de São Paulo em vez da data UTC na virada do dia
+  ---
+  duration_ms: 1843.5821
+  type: 'test'
+  ...
+# Subtest: período combina busca, múltiplos status, ordenação, limit e offset
+ok 4 - período combina busca, múltiplos status, ordenação, limit e offset
+  ---
+  duration_ms: 1312.4253
+  type: 'test'
+  ...
+# Subtest: data e período são aplicados em interseção, sem substituir filtros antigos
+ok 5 - data e período são aplicados em interseção, sem substituir filtros antigos
+  ---
+  duration_ms: 1121.0086
+  type: 'test'
+  ...
+# Subtest: sem limites preserva todos os agendamentos e a ordem anterior
+ok 6 - sem limites preserva todos os agendamentos e a ordem anterior
+  ---
+  duration_ms: 1341.628
+  type: 'test'
+  ...
+# Subtest: de maior que ate é recusado com 422, mesmo sem registros
+ok 7 - de maior que ate é recusado com 422, mesmo sem registros
+  ---
+  duration_ms: 902.7348
+  type: 'test'
+  ...
+# Subtest: limites rejeitam datas vazias, inexistentes e fora do formato ou intervalo aceito
+ok 8 - limites rejeitam datas vazias, inexistentes e fora do formato ou intervalo aceito
+  ---
+  duration_ms: 1215.4966
+  type: 'test'
+  ...
+# Subtest: limites rejeitam parâmetros repetidos e objetos em vez de strings
+ok 9 - limites rejeitam parâmetros repetidos e objetos em vez de strings
+  ---
+  duration_ms: 1023.8568
+  type: 'test'
+  ...
+# Subtest: dia bissexto válido e intervalo sem resultados retornam lista vazia
+ok 10 - dia bissexto válido e intervalo sem resultados retornam lista vazia
+  ---
+  duration_ms: 869.7521
+  type: 'test'
+  ...
+# Subtest: filtros novos não dispensam a sessão administrativa
+ok 11 - filtros novos não dispensam a sessão administrativa
+  ---
+  duration_ms: 891.913
+  type: 'test'
+  ...
+# Subtest: doações ordenam primeiro pelo instante ocorrido, antes do maior ID
+ok 12 - doações ordenam primeiro pelo instante ocorrido, antes do maior ID
+  ---
+  duration_ms: 1283.2865
+  type: 'test'
+  ...
+# Subtest: desempate de doações é numérico (10 antes de 2) e ocorre antes da paginação
+ok 13 - desempate de doações é numérico (10 antes de 2) e ocorre antes da paginação
+  ---
+  duration_ms: 1828.0272
+  type: 'test'
+  ...
+# Subtest: estornos continuam na listagem e o desempate não filtra nem altera doações
+ok 14 - estornos continuam na listagem e o desempate não filtra nem altera doações
+  ---
+  duration_ms: 1221.5941
+  type: 'test'
+  ...
+# Subtest: OpenAPI e coleção Postman publicam os limites e a ordenação de recebimentos
+ok 15 - OpenAPI e coleção Postman publicam os limites e a ordenação de recebimentos
+  ---
+  duration_ms: 978.983
+  type: 'test'
+  ...
+# Subtest: consulta apenas ano, valida contrato, ordena datas e compartilha chamadas concorrentes/cache
+ok 16 - consulta apenas ano, valida contrato, ordena datas e compartilha chamadas concorrentes/cache
+  ---
+  duration_ms: 49.1892
+  type: 'test'
+  ...
+# Subtest: ano inválido é recusado antes da rede
+ok 17 - ano inválido é recusado antes da rede
+  ---
+  duration_ms: 3.8554
+  type: 'test'
+  ...
+# Subtest: HTTP 404 informa indisponibilidade sem simular ausência de feriados
+ok 18 - HTTP 404 informa indisponibilidade sem simular ausência de feriados
+  ---
+  duration_ms: 2.5694
+  type: 'test'
+  ...
+# Subtest: HTTP 429 informa indisponibilidade sem simular ausência de feriados
+ok 19 - HTTP 429 informa indisponibilidade sem simular ausência de feriados
+  ---
+  duration_ms: 1.0883
+  type: 'test'
+  ...
+# Subtest: HTTP 500 informa indisponibilidade sem simular ausência de feriados
+ok 20 - HTTP 500 informa indisponibilidade sem simular ausência de feriados
+  ---
+  duration_ms: 0.6821
+  type: 'test'
+  ...
+# Subtest: JSON malformado e contratos divergentes são recusados
+ok 21 - JSON malformado e contratos divergentes são recusados
+  ---
+  duration_ms: 4.1339
+  type: 'test'
+  ...
+# Subtest: erro de rede não propaga detalhes do provedor
+ok 22 - erro de rede não propaga detalhes do provedor
+  ---
+  duration_ms: 1.261
+  type: 'test'
+  ...
+# Subtest: tempo limite interrompe também leitura lenta do corpo
+ok 23 - tempo limite interrompe também leitura lenta do corpo
+  ---
+  duration_ms: 31.1647
+  type: 'test'
+  ...
+# Subtest: cache expira, falha não reutiliza sucesso vencido e recuperação ocorre após 30s
+ok 24 - cache expira, falha não reutiliza sucesso vencido e recuperação ocorre após 30s
+  ---
+  duration_ms: 2.9602
+  type: 'test'
+  ...
+# Subtest: cache limitado a oito anos evita crescimento sem limite
+ok 25 - cache limitado a oito anos evita crescimento sem limite
+  ---
+  duration_ms: 6.2099
+  type: 'test'
+  ...
+# Subtest: rota de calendário publica contrato e recusa ano inválido antes da consulta
+ok 26 - rota de calendário publica contrato e recusa ano inválido antes da consulta
+  ---
+  duration_ms: 1680.2814
+  type: 'test'
+  ...
+# Subtest: indisponibilidade explícita do calendário não derruba prontidão
+ok 27 - indisponibilidade explícita do calendário não derruba prontidão
+  ---
+  duration_ms: 91.4315
+  type: 'test'
+  ...
+# Subtest: página de integração servida com CSP e sem servir arquivos do backend
+ok 28 - página de integração servida com CSP e sem servir arquivos do backend
+  ---
+  duration_ms: 171.0869
+  type: 'test'
+  ...
+# Subtest: origem da própria página é permitida; origem externa não autorizada continua recusada
+ok 29 - origem da própria página é permitida; origem externa não autorizada continua recusada
+  ---
+  duration_ms: 144.1236
+  type: 'test'
+  ...
+# Subtest: migração complementar é repetível e preserva dados, metas, triggers e views
+ok 30 - migração complementar é repetível e preserva dados, metas, triggers e views
+  ---
+  duration_ms: 9335.0108
+  type: 'test'
+  ...
+# Subtest: migração recusa base antiga/mista e desfaz alterações
+ok 31 - migração recusa base antiga/mista e desfaz alterações
+  ---
+  duration_ms: 775.0231
+  type: 'test'
+  ...
+# Subtest: catálogo público usa view e mantém aliases sem expor contatos
+ok 32 - catálogo público usa view e mantém aliases sem expor contatos
+  ---
+  duration_ms: 1362.7442
+  type: 'test'
+  ...
+# Subtest: produto e meta são criados separadamente e unidade em uso é protegida
+ok 33 - produto e meta são criados separadamente e unidade em uso é protegida
+  ---
+  duration_ms: 1486.1842
+  type: 'test'
+  ...
+# Subtest: renovar zera a nova meta e preserva o histórico anterior
+ok 34 - renovar zera a nova meta e preserva o histórico anterior
+  ---
+  duration_ms: 933.5962
+  type: 'test'
+  ...
+# Subtest: renovação que falha não encerra a meta original
+ok 35 - renovação que falha não encerra a meta original
+  ---
+  duration_ms: 897.6717
+  type: 'test'
+  ...
+# Subtest: login, revogação, expiração, cargo e usuário inativo são respeitados
+ok 36 - login, revogação, expiração, cargo e usuário inativo são respeitados
+  ---
+  duration_ms: 2303.2598
+  type: 'test'
+  ...
+# Subtest: agendar só promete; PF/PJ e fuso são preservados
+ok 37 - agendar só promete; PF/PJ e fuso são preservados
+  ---
+  duration_ms: 939.0021
+  type: 'test'
+  ...
+# Subtest: modelo exige meta como string e rejeita CPF/CNPJ, frações e campos indevidos
+ok 38 - modelo exige meta como string e rejeita CPF/CNPJ, frações e campos indevidos
+  ---
+  duration_ms: 808.3851
+  type: 'test'
+  ...
+# Subtest: seleção de meta antiga é recusada após renovação
+ok 39 - seleção de meta antiga é recusada após renovação
+  ---
+  duration_ms: 1062.5496
+  type: 'test'
+  ...
+# Subtest: reenvio concorrente devolve uma reserva e o mesmo código privado
+ok 40 - reenvio concorrente devolve uma reserva e o mesmo código privado
+  ---
+  duration_ms: 792.3774
+  type: 'test'
+  ...
+# Subtest: retry recupera reserva mesmo após tempo passar e meta fechar
+ok 41 - retry recupera reserva mesmo após tempo passar e meta fechar
+  ---
+  duration_ms: 1071.1941
+  type: 'test'
+  ...
+# Subtest: capacidade conta Confirmado, última vaga e cancelamento
+ok 42 - capacidade conta Confirmado, última vaga e cancelamento
+  ---
+  duration_ms: 1257.0542
+  type: 'test'
+  ...
+# Subtest: código errado não permite consultar/remarcar e vaga lotada mantém horário original
+ok 43 - código errado não permite consultar/remarcar e vaga lotada mantém horário original
+  ---
+  duration_ms: 1234.235
+  type: 'test'
+  ...
+# Subtest: recebimento parcial soma somente o que chegou e não conclui promessa
+ok 44 - recebimento parcial soma somente o que chegou e não conclui promessa
+  ---
+  duration_ms: 1152.9597
+  type: 'test'
+  ...
+# Subtest: idempotência de recebimento compara corpo e usuário e não duplica totais
+ok 45 - idempotência de recebimento compara corpo e usuário e não duplica totais
+  ---
+  duration_ms: 1274.7365
+  type: 'test'
+  ...
+# Subtest: recebimento espontâneo sem meta entra no mês sem preencher termômetro
+ok 46 - recebimento espontâneo sem meta entra no mês sem preencher termômetro
+  ---
+  duration_ms: 1082.9826
+  type: 'test'
+  ...
+# Subtest: meta de outro produto, data futura, produto inativo e item não prometido são recusados sem cabeçalho órfão
+ok 47 - meta de outro produto, data futura, produto inativo e item não prometido são recusados sem cabeçalho órfão
+  ---
+  duration_ms: 1403.0372
+  type: 'test'
+  ...
+# Subtest: estorno preserva registros, corrige mês original e exige motivo
+ok 48 - estorno preserva registros, corrige mês original e exige motivo
+  ---
+  duration_ms: 1222.5791
+  type: 'test'
+  ...
+# Subtest: conclusão parcial exige decisão explícita e registra itens entregues/cancelados
+ok 49 - conclusão parcial exige decisão explícita e registra itens entregues/cancelados
+  ---
+  duration_ms: 1498.5279
+  type: 'test'
+  ...
+# Subtest: conclusão integral permite excedente e limita só a barra, não o percentual real
+ok 50 - conclusão integral permite excedente e limita só a barra, não o percentual real
+  ---
+  duration_ms: 1714.2267
+  type: 'test'
+  ...
+# Subtest: IDs bigint maiores que Number seguro mantêm precisão nas respostas e rotas
+ok 51 - IDs bigint maiores que Number seguro mantêm precisão nas respostas e rotas
+  ---
+  duration_ms: 1281.4265
+  type: 'test'
+  ...
+# Subtest: contrato do frontend envia PF/PJ e meta, e recupera resposta perdida com API real local
+ok 52 - contrato do frontend envia PF/PJ e meta, e recupera resposta perdida com API real local
+  ---
+  duration_ms: 1663.286
+  type: 'test'
+  ...
+# Subtest: CORS, JSON inválido, autenticação e campos de autoria indevidos são bloqueados
+ok 53 - CORS, JSON inválido, autenticação e campos de autoria indevidos são bloqueados
+  ---
+  duration_ms: 1506.6542
+  type: 'test'
+  ...
+# Subtest: 25 verificações SQL originais passam e rollback não altera metas da API
+ok 54 - 25 verificações SQL originais passam e rollback não altera metas da API
+  ---
+  duration_ms: 750.4743
+  type: 'test'
+  ...
+# Subtest: SQL de demonstração original produz cinco metas e não admite carga repetida
+ok 55 - SQL de demonstração original produz cinco metas e não admite carga repetida
+  ---
+  duration_ms: 1393.3494
+  type: 'test'
+  ...
+# Subtest: recebimento com item não prometido e doador incompatível falha integralmente
+ok 56 - recebimento com item não prometido e doador incompatível falha integralmente
+  ---
+  duration_ms: 859.9622
+  type: 'test'
+  ...
+# Subtest: recebimento idempotente não permite reaproveitar chave de outro administrador
+ok 57 - recebimento idempotente não permite reaproveitar chave de outro administrador
+  ---
+  duration_ms: 1012.9633
+  type: 'test'
+  ...
+# Subtest: recebimento de entrega encerrada só é aceito se ocorreu antes do encerramento
+ok 58 - recebimento de entrega encerrada só é aceito se ocorreu antes do encerramento
+  ---
+  duration_ms: 862.6731
+  type: 'test'
+  ...
+# Subtest: metas duplicadas, frações e acesso público ao histórico são recusados
+ok 59 - metas duplicadas, frações e acesso público ao histórico são recusados
+  ---
+  duration_ms: 856.7514
+  type: 'test'
+  ...
+# Subtest: role limitada do exemplo executa API/triggers e não pode apagar histórico
+ok 60 - role limitada do exemplo executa API/triggers e não pode apagar histórico
+  ---
+  duration_ms: 1095.319
+  type: 'test'
+  ...
+# Subtest: Swagger é servido localmente com contrato 2.1 e assets sem CDN
+ok 61 - Swagger é servido localmente com contrato 2.1 e assets sem CDN
+  ---
+  duration_ms: 2175.2873
+  type: 'test'
+  ...
+# Subtest: OpenAPI possui referências resolvidas e descreve as operações E1
+ok 62 - OpenAPI possui referências resolvidas e descreve as operações E1
+  ---
+  duration_ms: 3.7461
+  type: 'test'
+  ...
+# Subtest: Postman cobre todas as operações e não contém credenciais ou tokens reais
+ok 63 - Postman cobre todas as operações e não contém credenciais ou tokens reais
+  ---
+  duration_ms: 3.4443
+  type: 'test'
+  ...
+# Subtest: ordem decrescente usa data da entrega e código como desempate, com paginação
+ok 64 - ordem decrescente usa data da entrega e código como desempate, com paginação
+  ---
+  duration_ms: 9077.8182
+  type: 'test'
+  ...
+# Subtest: busca por código simples e com \# retorna o agendamento
+ok 65 - busca por código simples e com \# retorna o agendamento
+  ---
+  duration_ms: 1172.6132
+  type: 'test'
+  ...
+# Subtest: busca por nome ignora caixa e por email aceita trecho
+ok 66 - busca por nome ignora caixa e por email aceita trecho
+  ---
+  duration_ms: 1301.3888
+  type: 'test'
+  ...
+# Subtest: telefone é pesquisado por trecho de quatro ou mais dígitos, inclusive entrada formatada
+ok 67 - telefone é pesquisado por trecho de quatro ou mais dígitos, inclusive entrada formatada
+  ---
+  duration_ms: 1105.8698
+  type: 'test'
+  ...
+# Subtest: curingas de busca são literais e código grande não causa erro SQL
+ok 68 - curingas de busca são literais e código grande não causa erro SQL
+  ---
+  duration_ms: 1168.828
+  type: 'test'
+  ...
+# Subtest: status único e múltiplos são combinados com busca e data
+ok 69 - status único e múltiplos são combinados com busca e data
+  ---
+  duration_ms: 1386.3566
+  type: 'test'
+  ...
+# Subtest: busca e filtros inválidos retornam 422, contatos exigem autenticação
+ok 70 - busca e filtros inválidos retornam 422, contatos exigem autenticação
+  ---
+  duration_ms: 1065.4119
+  type: 'test'
+  ...
+# Subtest: corpo vazio recebe toda a promessa e conclui em uma transação
+ok 71 - corpo vazio recebe toda a promessa e conclui em uma transação
+  ---
+  duration_ms: 1318.3855
+  type: 'test'
+  ...
+# Subtest: recebimentos anteriores são descontados e total confirmado vem no agendamento
+ok 72 - recebimentos anteriores são descontados e total confirmado vem no agendamento
+  ---
+  duration_ms: 1205.8512
+  type: 'test'
+  ...
+# Subtest: entrega parcial registra o que chegou, cancela pendências e exige motivo
+ok 73 - entrega parcial registra o que chegou, cancela pendências e exige motivo
+  ---
+  duration_ms: 1219.7322
+  type: 'test'
+  ...
+# Subtest: falha na conclusão desfaz recebimento, termômetro e chave; correção pode repetir a chave
+ok 74 - falha na conclusão desfaz recebimento, termômetro e chave; correção pode repetir a chave
+  ---
+  duration_ms: 1846.8797
+  type: 'test'
+  ...
+# Subtest: doação atrasada usa meta atual após renovação e preserva meta anterior
+ok 75 - doação atrasada usa meta atual após renovação e preserva meta anterior
+  ---
+  duration_ms: 1255.1212
+  type: 'test'
+  ...
+# Subtest: sem meta aberta registra recebimento sem vínculo, com total mensal
+ok 76 - sem meta aberta registra recebimento sem vínculo, com total mensal
+  ---
+  duration_ms: 1551.5716
+  type: 'test'
+  ...
+# Subtest: clique duplo com mesma chave não duplica recebimento
+ok 77 - clique duplo com mesma chave não duplica recebimento
+  ---
+  duration_ms: 1624.6338
+  type: 'test'
+  ...
+# Subtest: repetição de concluído com outra chave não gera recebimento adicional
+ok 78 - repetição de concluído com outra chave não gera recebimento adicional
+  ---
+  duration_ms: 1801.0354
+  type: 'test'
+  ...
+# Subtest: chave não pode mudar corpo ou agendamento nem cruzar rotas
+ok 79 - chave não pode mudar corpo ou agendamento nem cruzar rotas
+  ---
+  duration_ms: 2199.9078
+  type: 'test'
+  ...
+# Subtest: idempotência não aceita outro administrador
+ok 80 - idempotência não aceita outro administrador
+  ---
+  duration_ms: 1192.3863
+  type: 'test'
+  ...
+# Subtest: cancelado retorna 409; inexistente 404; acesso anônimo 401
+ok 81 - cancelado retorna 409; inexistente 404; acesso anônimo 401
+  ---
+  duration_ms: 939.953
+  type: 'test'
+  ...
+# Subtest: excedente da promessa e produto fora do agendamento são recusados sem gravação
+ok 82 - excedente da promessa e produto fora do agendamento são recusados sem gravação
+  ---
+  duration_ms: 918.8157
+  type: 'test'
+  ...
+# Subtest: produto desativado responde 409 com mensagem e desfaz toda a operação
+ok 83 - produto desativado responde 409 com mensagem e desfaz toda a operação
+  ---
+  duration_ms: 850.6214
+  type: 'test'
+  ...
+# Subtest: nenhuma quantidade recebida pode concluir com motivo, sem recebimento vazio
+ok 84 - nenhuma quantidade recebida pode concluir com motivo, sem recebimento vazio
+  ---
+  duration_ms: 804.221
+  type: 'test'
+  ...
+# Subtest: promessa integralmente recebida é concluída sem duplicar doações
+ok 85 - promessa integralmente recebida é concluída sem duplicar doações
+  ---
+  duration_ms: 959.5737
+  type: 'test'
+  ...
+# Subtest: corpos inválidos e chave ausente são recusados
+ok 86 - corpos inválidos e chave ausente são recusados
+  ---
+  duration_ms: 962.988
+  type: 'test'
+  ...
+# Subtest: meta atingida aceita nova promessa sem alterar arrecadação; meta encerrada e produto inativo continuam recusados
+ok 87 - meta atingida aceita nova promessa sem alterar arrecadação; meta encerrada e produto inativo continuam recusados
+  ---
+  duration_ms: 1084.2752
+  type: 'test'
+  ...
+# Subtest: consulta para Helena retorna meta, recebido e faltante; promessa não conta e excedente zera faltante
+ok 88 - consulta para Helena retorna meta, recebido e faltante; promessa não conta e excedente zera faltante
+  ---
+  duration_ms: 1253.2253
+  type: 'test'
+  ...
+# Subtest: quantidade_recebida soma histórico inteiro além de 100 recebimentos e ignora estornos
+ok 89 - quantidade_recebida soma histórico inteiro além de 100 recebimentos e ignora estornos
+  ---
+  duration_ms: 5288.8739
+  type: 'test'
+  ...
+# Subtest: role limitada executa conclusão atômica e consulta de quantidades
+ok 90 - role limitada executa conclusão atômica e consulta de quantidades
+  ---
+  duration_ms: 657.6917
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam varchar com tamanho errado
+ok 91 - migração e ready recusam varchar com tamanho errado
+  ---
+  duration_ms: 7267.0004
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam tipo errado
+ok 92 - migração e ready recusam tipo errado
+  ---
+  duration_ms: 1522.8092
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam coluna ausente
+ok 93 - migração e ready recusam coluna ausente
+  ---
+  duration_ms: 744.1356
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam coluna nullable indevida
+ok 94 - migração e ready recusam coluna nullable indevida
+  ---
+  duration_ms: 699.2714
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam coluna adicional
+ok 95 - migração e ready recusam coluna adicional
+  ---
+  duration_ms: 597.2767
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam default indevido
+ok 96 - migração e ready recusam default indevido
+  ---
+  duration_ms: 594.0273
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam timestamp sem fuso
+ok 97 - migração e ready recusam timestamp sem fuso
+  ---
+  duration_ms: 580.5052
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam chave primária ausente
+ok 98 - migração e ready recusam chave primária ausente
+  ---
+  duration_ms: 592.644
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam FK ausente
+ok 99 - migração e ready recusam FK ausente
+  ---
+  duration_ms: 672.24
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam FK com exclusão em cascata
+ok 100 - migração e ready recusam FK com exclusão em cascata
+  ---
+  duration_ms: 538.9356
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam FK não validada
+ok 101 - migração e ready recusam FK não validada
+  ---
+  duration_ms: 555.6036
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam FK adiada
+ok 102 - migração e ready recusam FK adiada
+  ---
+  duration_ms: 700.8509
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam unicidade parcial
+ok 103 - migração e ready recusam unicidade parcial
+  ---
+  duration_ms: 663.6404
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam view no lugar de tabela
+ok 104 - migração e ready recusam view no lugar de tabela
+  ---
+  duration_ms: 693.1659
+  type: 'test'
+  ...
+# Subtest: migração e ready recusam token público incompatível
+ok 105 - migração e ready recusam token público incompatível
+  ---
+  duration_ms: 651.7647
+  type: 'test'
+  ...
+# Subtest: ready exige tabela e migração instala tabela ausente
+ok 106 - ready exige tabela e migração instala tabela ausente
+  ---
+  duration_ms: 1000.0903
+  type: 'test'
+  ...
+# Subtest: /ready retorna 503 sem detalhes internos, /health mantém liveness
+ok 107 - /ready retorna 503 sem detalhes internos, /health mantém liveness
+  ---
+  duration_ms: 1909.0946
+  type: 'test'
+  ...
+# Subtest: primeira instalação recusa tabela preexistente divergente sem criar outros objetos nem perder dados
+ok 108 - primeira instalação recusa tabela preexistente divergente sem criar outros objetos nem perder dados
+  ---
+  duration_ms: 1275.6853
+  type: 'test'
+  ...
+# Subtest: verificação posterior rejeita índice preexistente errado e desfaz DDL novo
+ok 109 - verificação posterior rejeita índice preexistente errado e desfaz DDL novo
+  ---
+  duration_ms: 1587.6237
+  type: 'test'
+  ...
+# Subtest: migração distribuída usa exatamente o mesmo validador do ready
+ok 110 - migração distribuída usa exatamente o mesmo validador do ready
+  ---
+  duration_ms: 390.8883
+  type: 'test'
+  ...
+1..110
+# tests 110
+# suites 0
+# pass 110
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 54610.0164

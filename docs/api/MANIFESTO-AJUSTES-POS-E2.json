@@ -1,0 +1,47 @@
+{
+  "entrega": "Complemento E1 após E2 — três pedidos de Helena",
+  "data": "2026-10-28",
+  "base_develop": "4cc68c9ffebc1e57fc3a0eb2f6cfd2410511fb38",
+  "pr36_obrigatorio": {
+    "url": "https://github.com/univesp-pi-lar-ternura/sistema-doacoes/pull/36",
+    "head_sha": "021fbe2b72006ba22d898eb60e3277cdd349acd5",
+    "orientacao": "Integrar antes de publicar este complemento; a correção é preservada nos arquivos compartilhados."
+  },
+  "versao_api": "2.1.0",
+  "node_testado": "22.23.4",
+  "pnpm": "11.25.0",
+  "testes": {
+    "http_pglite": 110,
+    "postgres_concorrencia": 9,
+    "falhas": 0
+  },
+  "sem_alteracoes": [
+    "frontend",
+    "SQL/migrations/triggers/grants",
+    "pnpm-lock.yaml",
+    "dados existentes",
+    "Neon",
+    "Render",
+    "capacidade/feriados"
+  ],
+  "arquivos": {
+    "backend/README.md": "aae415c3e5ce88e86b5f3886ae9012be6e39323232a37184263f67522f942e4c",
+    "backend/package.json": "b8dccb9e9ffbbe2da88aad3f2dcaad27ad8339927675d65154ca90025a0d3bbb",
+    "backend/pnpm-workspace.yaml": "5d2703a7a8268898353e337fcd5c903691aee0dc38491ee9a0a12bb0b45c73b7",
+    "backend/scripts/build-postman.js": "4b0308daa9b49f69b9104fe7e1ea241fbc6f89b9a4bc936e957f70cf3a2ed2d5",
+    "backend/src/store.js": "bfd3770eb1ac66ee355ba865ad6bed019200d95d20e78471dc5884f65670d417",
+    "backend/src/validation.js": "b7fc125c907d4ade7bc4ec1d04c73782b80299a018b769b5ee95ead3b13eb8fc",
+    "backend/test/ajustes-e2.test.js": "a22d77b94acd9ac4c65f06ad549ea80e47ffd7bb1164eb2fb41fefbc7d14e64c",
+    "docs/api/AJUSTES-POS-E2-28-10-2026.md": "043bd875426923c857606f8536b7e309c9ea5a9b7d9d94deea32ca93f775ee29",
+    "docs/api/ENTREGA-E1-API-2.1.md": "9ea9d549afce70367816442ae0c26483990b2e15d529fbfe475ba06e03c29247",
+    "docs/api/INSTALACAO-NODE22-PNPM11.txt": "56d9e08377cfe9b85c6b7b255cbe37db59dad5f27f3091627c806994aac83e1a",
+    "docs/api/MIGRACAO-E-INTEGRACAO.md": "b97e12dc81a61329a7f34404f6c615d6a5c7665e32c7137b3ef039cec5b00980",
+    "docs/api/README.md": "28ec6d6c727f8193346de3f0484e4985649fa4734c6272f3a2910a9046b09ba5",
+    "docs/api/RESULTADO-AJUSTES-POS-E2.txt": "a286ccfad85659acd919270c07a912dd70463d3d7d0502f2409afbd48d9b4563",
+    "docs/api/RESULTADO-POSTGRES-POS-E2.txt": "ba938dbe70bb98d6962d299ecb3275b9fd5c3cf26ae46b1cda28352dfed9099a",
+    "docs/api/VALIDACAO.md": "1f4c9d31f67629aba63b7b632a231fb25678e68d5682842971dc9f8523788a42",
+    "docs/api/lar-ternura-api-2.1.postman_collection.json": "f4e6a413ec1b454f4b7e13c96d62052911c369cb5d0c0a65e994a08a4e97bb8b",
+    "docs/api/openapi.json": "e76f76c8b6e03c265dcbbf0fa9a493894c5fea1bbb39b154554f7bea6824ecf4"
+  },
+  "hashes": "SHA256 dos bytes entregues; este manifesto não inclui seu próprio hash. Manifestos históricos não foram reescritos."
+}

@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+/*
+  Tokens do projeto. Todas as combinações texto/fundo abaixo passam de 4,5:1 (WCAG 2.1 AA).
+  As cores de urgência NÃO usam o hex do banco (#EF4444, #F59E0B, #10B981), que falha em
+  contraste com texto branco; o front mapeia pelo nível (1, 2, 3).
+*/
+@theme {
+  --font-sans: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  /* Raleway é a fonte do site oficial (larternura.org.br); só nos títulos, o texto segue legível. */
+  --font-titulo: "Raleway", "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+
+  --color-tinta: #22304a;        /* texto principal: 12,6:1 sobre branco */
+  --color-tinta-suave: #4a5871;  /* texto secundário: 7,3:1 sobre branco */
+  --color-papel: #ffffff;
+  --color-nevoa: #fff9e0;        /* fundo de áreas secundárias (creme): tinta 12,5:1, lar 4,75:1 */
+  --color-linha: #eadfbf;        /* bordas decorativas */
+  --color-linha-forte: #6b7a90;  /* bordas de campos: 4,5:1 (WCAG 1.4.11 pede 3:1) */
+
+  --color-marca-amarelo: #fee704; /* tinta 10,5:1; marca-escuro 13,7:1 */
+  --color-marca-laranja: #f39c12; /* marca-escuro 7,9:1; com branco falha (2,2:1) */
+  --color-marca-vermelho: #e12444; /* destaque: 4,6:1 sobre branco */
+  --color-marca-escuro: #1f1a0a;  /* rodapé e texto sobre amarelo/laranja */
+
+  --color-lar: #b45309;          /* 5,0:1 com branco; 3,97:1 sobre o amarelo (foco) */
+  --color-lar-escuro: #92400e;   /* 7,1:1 com branco */
+  --color-lar-claro: #fff4c2;    /* lar-escuro 6,4:1; tinta 11,9:1 */
+
+  --color-alta: #b42318;         /* 6,5:1 com branco */
+  --color-alta-claro: #fde8e6;
+  --color-media: #fdb022;        /* usar SEMPRE com texto escuro */
+  --color-media-texto: #3a2a00;  /* 9,9:1 sobre --color-media */
+  --color-media-claro: #fff4d6;
+  --color-baixa: #067647;        /* 5,6:1 com branco */
+  --color-baixa-claro: #dff5ea;
+
+  --color-sucesso: #067647;
+  --color-erro: #b42318;
+}
+
+@layer base {
+  html {
+    font-size: 112.5%; /* 18px: público majoritariamente mais velho */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-papel text-tinta font-sans antialiased;
+    line-height: 1.55;
+  }
+
+  h1, h2 {
+    font-family: var(--font-titulo);
+    letter-spacing: -0.01em;
+  }
+
+  /* Por padrão o <fieldset> não encolhe abaixo do conteúdo e faz a página rolar de lado no celular. */
+  fieldset { min-inline-size: 0; }
+
+  /* Foco sempre visível e espesso, para quem navega por teclado. */
+  :focus-visible {
+    outline: 3px solid var(--color-lar);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+#conteudo:focus { outline: none; }
+
+.so-leitor {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0);
+  white-space: nowrap; border: 0;
+}
+
+.pular-link {
+  position: absolute; left: 1rem; top: -4rem;
+  z-index: 100;
+  @apply bg-lar text-white px-4 py-3 rounded-md font-bold;
+}
+.pular-link:focus { top: 1rem; }
+
+dialog::backdrop { background: rgb(34 48 74 / 0.55); }
+
+/* Impressão e "Salvar em PDF": só o conteúdo do documento, em preto sobre branco. */
+.so-impressao { display: none; }
+
+@media print {
+  @page { margin: 1.5cm; }
+  html { font-size: 11pt; }
+  header, nav, footer, button, .pular-link, .nao-imprimir,
+  aside[aria-label="Aviso de demonstração"] { display: none !important; }
+  .so-impressao { display: block; }
+  body, .bg-nevoa, .bg-papel { background: #fff !important; }
+  #conteudo { grid-column: 1 / -1; }
+  .overflow-x-auto { overflow: visible !important; border: 0 !important; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #8a8a8a; padding: 4pt 6pt !important; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

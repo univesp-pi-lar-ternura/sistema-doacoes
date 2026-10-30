@@ -1,0 +1,21 @@
+{
+  "base_develop": "e0bf27532af5e5cd7556a49abf0261b38e43c50f",
+  "data": "2026-10-26",
+  "descricao": "Correção de concorrência no receber-e-concluir, sem alteração no banco.",
+  "arquivos": {
+    "backend/README.md": "1e4f6a3bab0513b403cb56f2e9b8bdb07f7b5ffc93c54330fb6742e37e855613",
+    "backend/package.json": "abd8763f9958ed0ba4354476c36e45117f3d4e3de775854330765c7be5bb9b43",
+    "backend/scripts/test-postgres-concorrencia.cjs": "0281335e3f5e3f45e7fcaba0faab7e4b04e7ad34355231e9accd07c10e22e7fe",
+    "backend/src/store.js": "b2a4390f648befeda39bacc9655dda310c11dc48c4aa1aafc975eb48ffa8c364",
+    "backend/test/postgres/concorrencia.test.cjs": "2ef66f86d3e090ab8997877832206746af1b446d2a4ed3bc542620c61daa4a32",
+    "docs/api/CORRECAO-CONCORRENCIA-METAS-26-10-2026.md": "41140588b4e13a2baf317b9d2df79eec1d4dfc22c5d1ccbf4d06e376d4807209",
+    "docs/api/ENTREGA-E1-API-2.1.md": "c060b95c761d9fc0f460d0d517d9ca8a3384e9021e5a638914fafc6ab43334fa",
+    "docs/api/README.md": "70df8e832eff6b3a903096febc572a969068ff865abca348358ddd8dc8dc04e8",
+    "docs/api/REPRODUCAO-ANTES-DA-CORRECAO.txt": "95bef3c189a666cbd5967c02c489f51f1d3bde473383913b17d0cfd19380b194",
+    "docs/api/RESULTADO-POSTGRES-CONCORRENCIA.txt": "3deb212340b9da4ff27c02447a9d0aeddc0979736fdb6371db0f5b71d4d1af17",
+    "docs/api/RESULTADO-REGRESSAO-CONCORRENCIA.txt": "929d7d389c977560e598a742f777da5e877f9cf82742e46dfc545cdec67f3c8f",
+    "docs/api/VALIDACAO.md": "9b6a695e519e787949e0ad5f4f633688431c1502d4896da7f7b53321f6a9215a",
+    "docs/api/lar-ternura-api-2.1.postman_collection.json": "bcbc65a975b8d43778d3700cf1e57fe6d958579b934ab2781ce9dede9233a48c",
+    "docs/api/openapi.json": "0b3e63a7cee86622c3f33bfd3cf6a0cb1f9930f7a077134db90aae3b3d9b9ce4"
+  }
+}

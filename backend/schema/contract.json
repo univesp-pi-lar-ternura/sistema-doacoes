@@ -1,0 +1,191 @@
+[
+  {
+    "name": "public.agendamentos",
+    "partial": true,
+    "columns": {
+      "token_gestao_hash": {
+        "type": "character varying(64)",
+        "notNull": false
+      }
+    },
+    "unique": [
+      [
+        "token_gestao_hash"
+      ]
+    ],
+    "foreign": []
+  },
+  {
+    "name": "api_apoio.sessoes_ong",
+    "columns": {
+      "token_hash": {
+        "type": "character varying(64)",
+        "notNull": true
+      },
+      "id_usuario": {
+        "type": "integer",
+        "notNull": true
+      },
+      "expira_em": {
+        "type": "timestamp with time zone",
+        "notNull": true
+      }
+    },
+    "primary": [
+      "token_hash"
+    ],
+    "unique": [],
+    "foreign": [
+      {
+        "columns": [
+          "id_usuario"
+        ],
+        "table": "public.usuarios_ong",
+        "references": [
+          "id_usuario"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "api_apoio.slots_entrega",
+    "columns": {
+      "data_hora": {
+        "type": "timestamp with time zone",
+        "notNull": true
+      }
+    },
+    "primary": [
+      "data_hora"
+    ],
+    "unique": [],
+    "foreign": []
+  },
+  {
+    "name": "api_apoio.requisicoes_agendamento",
+    "columns": {
+      "chave": {
+        "type": "character varying(128)",
+        "notNull": true
+      },
+      "request_hash": {
+        "type": "character varying(64)",
+        "notNull": true
+      },
+      "id_agendamento": {
+        "type": "integer",
+        "notNull": false
+      }
+    },
+    "primary": [
+      "chave"
+    ],
+    "unique": [],
+    "foreign": [
+      {
+        "columns": [
+          "id_agendamento"
+        ],
+        "table": "public.agendamentos",
+        "references": [
+          "id_agendamento"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "api_apoio.itens_agendamento_necessidade",
+    "columns": {
+      "id_agendamento": {
+        "type": "integer",
+        "notNull": true
+      },
+      "id_item": {
+        "type": "integer",
+        "notNull": true
+      },
+      "id_necessidade": {
+        "type": "bigint",
+        "notNull": true
+      }
+    },
+    "primary": [
+      "id_agendamento",
+      "id_item"
+    ],
+    "unique": [],
+    "foreign": [
+      {
+        "columns": [
+          "id_agendamento",
+          "id_item"
+        ],
+        "table": "public.itens_agendamento",
+        "references": [
+          "id_agendamento",
+          "id_item"
+        ]
+      },
+      {
+        "columns": [
+          "id_necessidade",
+          "id_item"
+        ],
+        "table": "arrecadacao.necessidades",
+        "references": [
+          "id_necessidade",
+          "id_item"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "api_apoio.requisicoes_recebimento",
+    "columns": {
+      "chave": {
+        "type": "uuid",
+        "notNull": true
+      },
+      "request_hash": {
+        "type": "character varying(64)",
+        "notNull": true
+      },
+      "id_usuario": {
+        "type": "integer",
+        "notNull": true
+      },
+      "id_recebimento": {
+        "type": "bigint",
+        "notNull": false
+      }
+    },
+    "primary": [
+      "chave"
+    ],
+    "unique": [
+      [
+        "id_recebimento"
+      ]
+    ],
+    "foreign": [
+      {
+        "columns": [
+          "id_usuario"
+        ],
+        "table": "public.usuarios_ong",
+        "references": [
+          "id_usuario"
+        ]
+      },
+      {
+        "columns": [
+          "id_recebimento"
+        ],
+        "table": "arrecadacao.recebimentos",
+        "references": [
+          "id_recebimento"
+        ]
+      }
+    ]
+  }
+]

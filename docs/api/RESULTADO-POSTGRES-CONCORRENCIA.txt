@@ -1,0 +1,20 @@
+PostgreSQL local: 17.11
+Duas sessões PostgreSQL distintas; READ COMMITTED e role limitada de execução.
+✔ renovação ganha: entrega usa a nova meta e preenche o termômetro (1483.4325ms)
+✔ renovação por SQL direto também é reconhecida após a espera (946.7096ms)
+✔ vários produtos: uma meta renovada não perde vínculo nem duplica outro item (765.8828ms)
+✔ encerramento sem substituta mantém recebimento sem meta por ausência real (855.7992ms)
+✔ confirmação ganha: renovação aguarda e preserva o crédito no histórico anterior (836.198ms)
+✔ renovações contínuas fazem rollback e a mesma chave pode recuperar a operação depois (682.3194ms)
+✔ duas conexões com a mesma chave confirmam uma única doação (749.7875ms)
+✔ cinco corridas controladas consecutivas não perdem crédito (864.6877ms)
+✔ travas seguem ordem numérica com IDs 2 e 10, compatível com o banco (635.4762ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8707.8103
+Cluster de teste encerrado. Sem serviço instalado.

@@ -1,0 +1,78 @@
+name: Conferir acesso ao Neon
+
+# Executa quando este arquivo entra ou muda na develop.
+# Somente leitura da API administrativa: não executa SQL ou migrations.
+on:
+  push:
+    branches: [develop]
+    paths:
+      - .github/workflows/neon-conexao.yml
+
+permissions: {}
+
+jobs:
+  conferir:
+    name: Conferir chave e projeto
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Consultar identificação do projeto
+        shell: python3 {0}
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+        run: |
+          import json
+          import os
+          import sys
+          import urllib.error
+          import urllib.request
+
+          def fail(message):
+              print('::error::' + message)
+              sys.exit(1)
+
+          project_id = os.environ.get('NEON_PROJECT_ID', '').strip()
+          api_key = os.environ.get('NEON_API_KEY', '').strip()
+          expected_id = 'ancient-mouse-16220491'
+          expected_name = 'lar-ternura-db'
+
+          if not api_key:
+              fail('O secret NEON_API_KEY está ausente ou vazio.')
+          if project_id != expected_id:
+              fail('Confira a variável NEON_PROJECT_ID: deve identificar lar-ternura-db.')
+
+          # Impede encaminhar o cabeçalho de autorização em redirecionamentos.
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+
+          request = urllib.request.Request(
+              'https://console.neon.tech/api/v2/projects/' + expected_id,
+              headers={'Authorization': 'Bearer ' + api_key, 'Accept': 'application/json'},
+              method='GET',
+          )
+          try:
+              opener = urllib.request.build_opener(NoRedirect())
+              with opener.open(request, timeout=30) as response:
+                  payload = json.load(response)
+          except urllib.error.HTTPError as error:
+              fail('Neon recusou a consulta (HTTP ' + str(error.code) + '). Confira a chave e seu acesso ao projeto.')
+          except (urllib.error.URLError, TimeoutError, OSError):
+              fail('Não foi possível consultar o Neon: falha de rede ou tempo limite.')
+          except (ValueError, UnicodeError):
+              fail('Neon retornou uma resposta que não pôde ser interpretada.')
+
+          project = payload.get('project') if isinstance(payload, dict) else None
+          if not isinstance(project, dict):
+              fail('A resposta do Neon não contém a identificação esperada.')
+          if project.get('id') != expected_id or project.get('name') != expected_name:
+              fail('O projeto retornado não corresponde a lar-ternura-db. Revise a configuração.')
+
+          print('OK: GitHub Actions autenticou no Neon e confirmou lar-ternura-db.')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
+              summary.write('## Acesso ao Neon confirmado\n\n')
+              summary.write('- Projeto: `lar-ternura-db`\n')
+              summary.write('- ID: `ancient-mouse-16220491`\n')
+              summary.write('- Consulta GET somente de leitura, sem SQL ou alterações.\n')
+              summary.write('- Este resultado não valida conexão PostgreSQL, migrations ou endpoints da aplicação.\n')

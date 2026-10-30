@@ -1,0 +1,1400 @@
+{
+  "info": {
+    "name": "Lar Ternura — API 2.1.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Coleção gerada do OpenAPI. Use somente ambiente autorizado. Configure data/IDs retornados pela API e credenciais privadas. Chaves de idempotência são geradas uma vez por operação e mantidas para retry: apague a variável chave_* ao iniciar outra operação. Não execute Run collection indiscriminadamente: há rotas de escrita. O token do agendamento é diferente da sessão ONG."
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:3000",
+      "type": "string"
+    },
+    {
+      "key": "ong_email",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ong_senha",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ong_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token_agendamento",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "ano",
+      "value": "2026",
+      "type": "string"
+    },
+    {
+      "key": "mes",
+      "value": "2026-10",
+      "type": "string"
+    },
+    {
+      "key": "id_necessidade",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "data_agendamento",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "periodo_de",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "periodo_ate",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "horario",
+      "value": "14:00",
+      "type": "string"
+    },
+    {
+      "key": "ocorrido_em",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Público",
+      "item": [
+        {
+          "name": "GET /health — Verificar processo",
+          "request": {
+            "method": "GET",
+            "description": "Verificar processo",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /ready — Verificar banco e complemento instalados",
+          "request": {
+            "method": "GET",
+            "description": "Confere estrutura do complemento a cada chamada usando o mesmo contrato da migração. Divergências impedem prontidão; /health verifica somente o processo.",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ready",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ready"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /auth/login — Autenticar administrador ativo",
+          "request": {
+            "method": "POST",
+            "description": "Autenticar administrador ativo",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{ong_email}}\",\n  \"senha\": \"{{ong_senha}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) pm.collectionVariables.set('ong_token', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /categorias — Listar urgências em ordem",
+          "request": {
+            "method": "GET",
+            "description": "Listar urgências em ordem",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categorias",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categorias"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /itens — Consultar termômetro de metas abertas",
+          "request": {
+            "method": "GET",
+            "description": "Consulta paginada de necessidades abertas de produtos ativos, incluindo metas já atingidas. Retorna quantidade_meta, quantidade_arrecadada e quantidade_faltante (mínimo zero), com unidade de cada produto. Use limit/offset até obter página vazia. Não soma unidades diferentes. Recebimentos confirmados entram no total; promessas não entram. Base para a tela de consulta e PDF do frontend. Histórico fechado em /admin/necessidades/historico.",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/itens",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "itens"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "disabled": true
+                },
+                {
+                  "key": "q",
+                  "value": "Maria",
+                  "disabled": true
+                },
+                {
+                  "key": "categoria",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "prioridade",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /necessidades — Consultar termômetro de metas abertas",
+          "request": {
+            "method": "GET",
+            "description": "Consulta paginada de necessidades abertas de produtos ativos, incluindo metas já atingidas. Retorna quantidade_meta, quantidade_arrecadada e quantidade_faltante (mínimo zero), com unidade de cada produto. Use limit/offset até obter página vazia. Não soma unidades diferentes. Recebimentos confirmados entram no total; promessas não entram. Base para a tela de consulta e PDF do frontend. Histórico fechado em /admin/necessidades/historico.",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/necessidades",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "necessidades"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "disabled": true
+                },
+                {
+                  "key": "q",
+                  "value": "Maria",
+                  "disabled": true
+                },
+                {
+                  "key": "categoria",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "prioridade",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /itens/{id} — Consultar meta aberta pelo ID do produto",
+          "request": {
+            "method": "GET",
+            "description": "Consultar meta aberta pelo ID do produto",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/itens/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "itens",
+                "{{id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /disponibilidade — Consultar capacidade, incluindo Pendente e Confirmado",
+          "request": {
+            "method": "GET",
+            "description": "Consultar capacidade, incluindo Pendente e Confirmado",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/disponibilidade",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "disponibilidade"
+              ],
+              "query": [
+                {
+                  "key": "data",
+                  "value": "{{data_agendamento}}",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /agendamentos — Registrar promessa vinculada à meta selecionada",
+          "request": {
+            "method": "POST",
+            "description": "Permite agendar necessidades abertas de produtos ativos mesmo com meta atingida. Exige id_necessidade atual; metas encerradas/canceladas/renovadas e produtos inativos continuam sendo recusados. A promessa não altera a arrecadação confirmada.",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{chave_post_agendamentos}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/agendamentos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "agendamentos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doador\": {\n    \"nome\": \"Pessoa fictícia\",\n    \"email\": \"doador@example.test\",\n    \"telefone\": \"11999999999\",\n    \"tipo_doador\": \"PF\"\n  },\n  \"data\": \"{{data_agendamento}}\",\n  \"horario\": \"{{horario}}\",\n  \"itens\": [\n    {\n      \"id_item\": 1,\n      \"id_necessidade\": \"{{id_necessidade}}\",\n      \"quantidade_doada\": 2\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.collectionVariables.get('chave_post_agendamentos')) pm.collectionVariables.set('chave_post_agendamentos', pm.variables.replaceIn('{{$guid}}'));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200,201].includes(pm.response.code)) { const b=pm.response.json(); pm.collectionVariables.set('id', String(b.agendamento.id_agendamento)); pm.collectionVariables.set('token_agendamento', b.token_acesso); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /calendario/feriados/{ano} — Consultar calendário informativo da BrasilAPI",
+          "request": {
+            "method": "GET",
+            "description": "Consulta opcional. Não bloqueia agendamentos nem altera vagas. HTTP 200 também pode conter status indisponivel; nesse caso feriados é null. Datas e tipos são informações do provedor, não regra de funcionamento da ONG.",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/calendario/feriados/{{ano}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "calendario",
+                "feriados",
+                "{{ano}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ONG",
+      "item": [
+        {
+          "name": "GET /auth/me — Consultar sessão ativa",
+          "request": {
+            "method": "GET",
+            "description": "Consultar sessão ativa",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /auth/logout — Revogar sessão",
+          "request": {
+            "method": "POST",
+            "description": "Revogar sessão",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /itens — Cadastrar produto, sem criar meta",
+          "request": {
+            "method": "POST",
+            "description": "Cadastrar produto, sem criar meta",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/itens",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "itens"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome_item\": \"exemplo\",\n  \"unidade_medida\": \"exemplo\",\n  \"categoria_suprimento\": \"exemplo\",\n  \"id_categoria\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PUT /itens/{id} — Atualizar produto, preservando unidade em uso",
+          "request": {
+            "method": "PUT",
+            "description": "Atualizar produto, preservando unidade em uso",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/itens/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "itens",
+                "{{id}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome_item\": \"exemplo\",\n  \"unidade_medida\": \"exemplo\",\n  \"categoria_suprimento\": \"exemplo\",\n  \"id_categoria\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE /itens/{id} — Desativar produto sem apagar histórico",
+          "request": {
+            "method": "DELETE",
+            "description": "Desativar produto sem apagar histórico",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/itens/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "itens",
+                "{{id}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /admin/itens — Listar catálogo completo, inclusive inativos",
+          "request": {
+            "method": "GET",
+            "description": "Listar catálogo completo, inclusive inativos",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/itens",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "itens"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "disabled": true
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /admin/itens/{id} — Consultar produto do catálogo",
+          "request": {
+            "method": "GET",
+            "description": "Consultar produto do catálogo",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/itens/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "itens",
+                "{{id}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /admin/necessidades — Abrir meta independente",
+          "request": {
+            "method": "POST",
+            "description": "Abrir meta independente",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/necessidades",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "necessidades"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_item\": 1,\n  \"id_categoria\": 1,\n  \"quantidade_meta\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PATCH /admin/necessidades/{id}/encerrar — Encerrar/cancelar meta, sem apagar recebimentos",
+          "request": {
+            "method": "PATCH",
+            "description": "Encerrar/cancelar meta, sem apagar recebimentos",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/necessidades/{{id}}/encerrar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "necessidades",
+                "{{id}}",
+                "encerrar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /admin/necessidades/{id}/cancelar — Encerrar/cancelar meta, sem apagar recebimentos",
+          "request": {
+            "method": "PATCH",
+            "description": "Encerrar/cancelar meta, sem apagar recebimentos",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/necessidades/{{id}}/cancelar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "necessidades",
+                "{{id}}",
+                "cancelar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /admin/necessidades/{id}/renovar — Encerrar meta e criar outra em transação",
+          "request": {
+            "method": "POST",
+            "description": "Encerrar meta e criar outra em transação",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/necessidades/{{id}}/renovar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "necessidades",
+                "{{id}}",
+                "renovar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_categoria\": 1,\n  \"quantidade_meta\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /admin/necessidades/historico — Listar histórico de metas",
+          "request": {
+            "method": "GET",
+            "description": "Listar histórico de metas",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/necessidades/historico",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "necessidades",
+                "historico"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "disabled": true
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /admin/arrecadacao/mensal — Arrecadação efetiva por mês civil de São Paulo",
+          "request": {
+            "method": "GET",
+            "description": "Arrecadação efetiva por mês civil de São Paulo",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/arrecadacao/mensal",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "arrecadacao",
+                "mensal"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "disabled": true
+                },
+                {
+                  "key": "mes",
+                  "value": "{{mes}}",
+                  "disabled": true
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /admin/agendamentos/{id}/cancelar — Alterar antes de iniciar recebimento",
+          "request": {
+            "method": "PATCH",
+            "description": "Alterar antes de iniciar recebimento",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/agendamentos/{{id}}/cancelar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "agendamentos",
+                "{{id}}",
+                "cancelar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /admin/agendamentos/{id}/remarcar — Alterar antes de iniciar recebimento",
+          "request": {
+            "method": "PATCH",
+            "description": "Alterar antes de iniciar recebimento",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/agendamentos/{{id}}/remarcar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "agendamentos",
+                "{{id}}",
+                "remarcar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"{{data_agendamento}}\",\n  \"horario\": \"{{horario}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /admin/agendamentos — Consultar agendamentos e contatos",
+          "request": {
+            "method": "GET",
+            "description": "Retorna lista paginada, ordenada por data_hora_agendada DESC e id_agendamento DESC. Busca literal e sem diferença de caixa por nome/email; código com ou sem #; telefone por 4 ou mais dígitos, ignorando formatação. Não remove acentos. Código fora do intervalo inteiro não provoca erro. Contatos exigem sessão administrativa. Os limites de e ate são opcionais e inclusivos, pela data local de America/Sao_Paulo. Quando combinados com data, todos os filtros são aplicados em conjunto (interseção); data fora do intervalo retorna lista vazia. Limites omitidos não restringem aquele lado do período. Datas vazias, inexistentes, com formato inválido ou de maior que ate retornam 422. A ordenação permanece data_hora_agendada DESC, id_agendamento DESC antes da paginação.",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/agendamentos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "agendamentos"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "disabled": true
+                },
+                {
+                  "key": "data",
+                  "value": "{{data_agendamento}}",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "Pendente,Confirmado",
+                  "disabled": true
+                },
+                {
+                  "key": "q",
+                  "value": "Maria",
+                  "disabled": true
+                },
+                {
+                  "key": "de",
+                  "value": "{{periodo_de}}",
+                  "disabled": true
+                },
+                {
+                  "key": "ate",
+                  "value": "{{periodo_ate}}",
+                  "disabled": true
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /admin/agendamentos/{id} — Consultar agendamento administrativo",
+          "request": {
+            "method": "GET",
+            "description": "Consultar agendamento administrativo",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/agendamentos/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "agendamentos",
+                "{{id}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /admin/agendamentos/{id}/concluir — Concluir entrega por decisão administrativa",
+          "request": {
+            "method": "PATCH",
+            "description": "Concluir entrega por decisão administrativa",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/agendamentos/{{id}}/concluir",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "agendamentos",
+                "{{id}}",
+                "concluir"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo_pendencias\": \"Justificativa registrada pela equipe\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST /doacoes — Registrar quantidades efetivas e confirmar recebimento",
+          "request": {
+            "method": "POST",
+            "description": "Registrar quantidades efetivas e confirmar recebimento",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{chave_post_doacoes}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/doacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "doacoes"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ocorrido_em\": \"{{ocorrido_em}}\",\n  \"itens\": [\n    {\n      \"id_item\": 1,\n      \"id_necessidade\": \"{{id_necessidade}}\",\n      \"quantidade_recebida\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.collectionVariables.get('chave_post_doacoes')) pm.collectionVariables.set('chave_post_doacoes', pm.variables.replaceIn('{{$guid}}'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /doacoes — Listar recebimentos físicos",
+          "request": {
+            "method": "GET",
+            "description": "Lista paginada de recebimentos físicos, ordenada por ocorrido_em DESC, com desempate pelo id_recebimento numérico DESC. A ordenação é aplicada antes de limit e offset e inclui os status existentes, inclusive estornos.",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/doacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "doacoes"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "disabled": true
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /doacoes/{id} — Consultar recebimento e itens",
+          "request": {
+            "method": "GET",
+            "description": "Consultar recebimento e itens",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/doacoes/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "doacoes",
+                "{{id}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /doacoes/{id}/estornar — Estornar recebimento preservando registro",
+          "request": {
+            "method": "PATCH",
+            "description": "Estornar recebimento preservando registro",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/doacoes/{{id}}/estornar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "doacoes",
+                "{{id}}",
+                "estornar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Justificativa registrada pela equipe\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST /admin/agendamentos/{id}/receber-e-concluir — Registrar chegada e concluir agendamento numa transação",
+          "request": {
+            "method": "POST",
+            "description": "Trava o agendamento e usa a meta aberta atual por produto; sem meta aberta, registra sem vínculo. Aceita atrasados. Idempotência compara administrador, agendamento e corpo, e não permite reutilizar a chave em POST /doacoes. Produto inativo com saldo a receber gera 409. Repetição de concluído não cria doação adicional. Datas de recebimento são atribuídas pelo servidor. Se a meta mudar enquanto sua trava é obtida, a API relê a seleção. Após cinco tentativas sem estabilização, retorna 409 META_EM_ALTERACAO e desfaz a operação; a mesma chave pode ser usada no retry.",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{chave_post_admin_agendamentos_id_receber_e_concluir}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/agendamentos/{{id}}/receber-e-concluir",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "agendamentos",
+                "{{id}}",
+                "receber-e-concluir"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ong_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.collectionVariables.get('chave_post_admin_agendamentos_id_receber_e_concluir')) pm.collectionVariables.set('chave_post_admin_agendamentos_id_receber_e_concluir', pm.variables.replaceIn('{{$guid}}'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Agendamento privado",
+      "item": [
+        {
+          "name": "GET /agendamentos/{id} — Consultar com código privado",
+          "request": {
+            "method": "GET",
+            "description": "Consultar com código privado",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/agendamentos/{{id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "agendamentos",
+                "{{id}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_agendamento}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /agendamentos/{id}/cancelar — Alterar antes de iniciar recebimento",
+          "request": {
+            "method": "PATCH",
+            "description": "Alterar antes de iniciar recebimento",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/agendamentos/{{id}}/cancelar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "agendamentos",
+                "{{id}}",
+                "cancelar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_agendamento}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /agendamentos/{id}/remarcar — Alterar antes de iniciar recebimento",
+          "request": {
+            "method": "PATCH",
+            "description": "Alterar antes de iniciar recebimento",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/agendamentos/{{id}}/remarcar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "agendamentos",
+                "{{id}}",
+                "remarcar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_agendamento}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"{{data_agendamento}}\",\n  \"horario\": \"{{horario}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
